@@ -9,4 +9,4 @@ repos:
     - id: checkov
     - id: terrascan
     - id: terraform_tfsec
-      files: ^terraform-aws-modules/
+      # files: ^terraform-aws-modules/
