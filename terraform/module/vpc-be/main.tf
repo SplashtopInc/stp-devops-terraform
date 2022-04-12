@@ -1,10 +1,3 @@
-## Allocate EIPs for NAT Gateways of EKS VPC private subnets ###
-resource "aws_eip" "stp-vpc-backend-nat-eip" {
-  count = 2
-
-  vpc = true
-}
-
 ### VPC ###
 module "vpc-be" {
   source  = "terraform-aws-modules/vpc/aws"
