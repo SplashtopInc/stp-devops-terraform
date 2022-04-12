@@ -72,21 +72,6 @@ variable "vpc_backend_nat_eip_ids" {
   // "eipalloc-xxxxxxxxxxxxxxxxx"
 }
 
-### SG whitelist ###
-variable "sg_whitelist_ips" {
-  type = list(string)
-  default = [
-    "44.233.246.210/32",  # James gstun-ctrl
-    "74.203.89.92/32",    # James office 1
-    "104.128.103.242/32", # James office 2
-    "75.61.103.188/32",   # SJC office 1
-    "50.193.44.33/32",    # SJC office 2
-    "122.224.111.100/32", # HGH office
-    "211.23.144.132/32",  # TPE office 1
-    "61.31.169.172/32"    # TPE office 2
-  ]
-}
-
 ### Site information ###
 variable "domain" {
   type    = string
