@@ -34,6 +34,11 @@ variable "environment" {
   default = ""
 }
 
+variable "region" {
+  type    = string
+  default = ""
+}
+
 ## Passing outputs between modules
 variable "vpc_be_id" {
   description = "vpc be module outputs the ID under the name vpc_be_id"
