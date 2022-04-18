@@ -161,7 +161,6 @@ module "db2" {
   enabled_cloudwatch_logs_exports = ["slowquery"]
   allowed_cidr_blocks             = ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]
   create_security_group           = true
-  #tfsec:ignore:no-public-db-access
   publicly_accessible             = true
 
   skip_final_snapshot             = true
