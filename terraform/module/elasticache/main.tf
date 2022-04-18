@@ -1,18 +1,18 @@
 resource "random_password" "redis_auth_token" {
-  count             = length(var.redis_nodes_list)
-  length            = 32
-  lower             = true
-  upper             = true
-  number            = true
-  special           = false       # No special for now
-  override_special  = "!&#$^<>-"  # EC Redis only support restricted characters
+  count            = length(var.redis_nodes_list)
+  length           = 32
+  lower            = true
+  upper            = true
+  number           = true
+  special          = false      # No special for now
+  override_special = "!&#$^<>-" # EC Redis only support restricted characters
 }
 
 resource "aws_security_group" "redis-sg" {
   description = "Security Group - ${var.redis_nodes_list[count.index]}-${local.cluster_name_suffix}"
-  count         = length(var.redis_nodes_list)
-  name_prefix   = "${var.redis_nodes_list[count.index]}-${local.cluster_name_suffix}-sg"
-  vpc_id        = data.aws_vpc.stp-vpc-db.id
+  count       = length(var.redis_nodes_list)
+  name_prefix = "${var.redis_nodes_list[count.index]}-${local.cluster_name_suffix}-sg"
+  vpc_id      = data.aws_vpc.stp-vpc-db.id
 
   # Allow internal
   ingress {
@@ -27,7 +27,7 @@ resource "aws_security_group" "redis-sg" {
     ]
   }
 
-  tags          = {
+  tags = {
     Name = "${var.redis_nodes_list[count.index]}-${local.cluster_name_suffix}-sg"
   }
 }
@@ -39,7 +39,8 @@ resource "aws_elasticache_subnet_group" "redis-subnet-group" {
 }
 
 resource "aws_elasticache_replication_group" "redis-replica-group" {
-  count                         = length(var.redis_nodes_list)
+  count = length(var.redis_nodes_list)
+  #checkov:skip=CKV_AWS_191:no not use kms key
   replication_group_id          = "${var.redis_nodes_list[count.index]}-${local.cluster_name_suffix}"
   replication_group_description = "Splashtop - Redis Replication Group"
   engine                        = "redis"
@@ -59,8 +60,8 @@ resource "aws_elasticache_replication_group" "redis-replica-group" {
   snapshot_window               = var.redis_snapshot_window[count.index]
   snapshot_retention_limit      = var.redis_snapshot_retention_limit
 
-  auto_minor_version_upgrade    = true
-  apply_immediately             = true
+  auto_minor_version_upgrade = true
+  apply_immediately          = true
 
-  notification_topic_arn        = var.redis_sns_arn
+  notification_topic_arn = var.redis_sns_arn
 }

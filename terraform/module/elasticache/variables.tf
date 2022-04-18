@@ -26,17 +26,17 @@ variable "environment" {
 
 variable "vpc_db_vpc_id" {
   description = "vpc module outputs the ID under the name vpc_id"
-  type    = string
-  default = ""
+  type        = string
+  default     = ""
 }
 
 variable "vpc-db-private-subnets" {
   description = "vpc module outputs the db-private-subnet ID under the name subnets"
-  type    = list(string)
-  default = []
+  type        = list(string)
+  default     = []
 }
 
-variable "redis-sg-cidr" { 
+variable "redis-sg-cidr" {
   type = list(string)
   default = [
     "10.0.0.0/8",
@@ -50,7 +50,7 @@ variable "redis-sg-cidr" {
 variable "redis_nodes_list" {
   description = "Redis nodes list"
   type        = list(string)
-  default     = [
+  default = [
     "redis-master",
     "redis-noaof",
     "redis-timeout",
