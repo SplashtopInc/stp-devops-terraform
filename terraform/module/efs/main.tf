@@ -5,7 +5,6 @@ module "efs" {
   region  = var.region
   vpc_id  = var.vpc_id
   subnets = var.private_subnet_ids
-  // name    = sonarqube
 
   access_points = {
     "data" = {
