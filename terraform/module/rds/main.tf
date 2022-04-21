@@ -161,7 +161,7 @@ module "db2" {
   enabled_cloudwatch_logs_exports = ["slowquery"]
   allowed_cidr_blocks             = ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]
   create_security_group           = true
-  publicly_accessible             = true
+  publicly_accessible             = false
 
   skip_final_snapshot             = true
   db_parameter_group_name         = aws_db_parameter_group.db2_parameter_group.id
