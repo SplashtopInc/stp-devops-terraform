@@ -52,7 +52,7 @@ module "db1" {
   engine_mode    = "provisioned" #  Valid values: global, multimaster, parallelquery, provisioned, serverless. Defaults to: provisioned
 
   vpc_id  = (var.vpc_db_vpc_id != "" ? var.vpc_db_vpc_id : data.aws_vpc.stp-vpc-db.id)
-  subnets = (var.vpc-db-all-subnets != "" ? var.vpc-db-all-subnets : data.aws_subnet_ids.stp-vpc-db-all.ids)
+  subnets = (var.vpc-db-all-subnets != [] ? var.vpc-db-all-subnets : data.aws_subnet_ids.stp-vpc-db-all.ids)
 
   username = var.db_master_username
 
