@@ -36,8 +36,9 @@ POLICIES
 
 resource "aws_elasticsearch_domain" "be_elasticsearch_domain" {
   #ts:skip=AWS.ElasticSearch.EKM.Medium.0768 skip
-  #checkov:skip=CKV_AWS_137:The Elasticsearch is a public and limited ip address
   #ts:skip=AWS.Elasticsearch.Logging.Medium.0573 already add slow logs
+  #checkov:skip=CKV_AWS_137:The Elasticsearch is a public and limited ip address
+  #checkov:skip=CKV_AWS_247:Skip CMK
   domain_name           = local.elasticache_cluster_domain
   elasticsearch_version = "OpenSearch_1.1"
 
