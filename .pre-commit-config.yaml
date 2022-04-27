@@ -7,7 +7,7 @@ repos:
     - id: terraform_docs
     - id: terraform_tflint
     - id: terraform_validate
-    - id: checkov
+    - id: terraform_checkov
     - id: terrascan
       args:
         - --args=--non-recursive # avoids scan errors on subdirectories without Terraform config files
