@@ -13,7 +13,7 @@ repos:
         - --args=--non-recursive # avoids scan errors on subdirectories without Terraform config files
         - --args=--policy-type=aws
         - --args=--verbose
-        - --args=--skip-rules="AC_AWS_0487"
+        - --args=--skip-rules="AC_AWS_0487,AC_AWS_0214,AC_AWS_0497,AC_AWS_0207"
     - id: terraform_tfsec
       args: 
         - --args=--exclude-downloaded-modules --exclude-path .tfsec
