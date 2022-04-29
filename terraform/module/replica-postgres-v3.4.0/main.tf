@@ -49,7 +49,7 @@ module "master" {
 
   name     = var.db_name
   username = var.db_user
-  #tfsec:ignore:general-secrets-sensitive-in-attribute
+
   password = var.db_pass
   port     = local.port
 
@@ -109,7 +109,7 @@ module "replica" {
   maintenance_window              = "Tue:00:00-Tue:03:00"
   backup_window                   = "03:00-06:00"
   enabled_cloudwatch_logs_exports = ["postgresql", "upgrade"]
-  #tfsec:ignore:aws-rds-specify-backup-retention
+
   backup_retention_period = 0
   skip_final_snapshot     = true
   deletion_protection     = false
