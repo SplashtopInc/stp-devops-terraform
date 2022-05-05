@@ -444,7 +444,11 @@ variable "enabled_cloudwatch_logs_exports" {
 variable "timeouts" {
   description = "Updated Terraform resource management timeouts. Applies to `aws_db_instance` in particular to permit resource management times"
   type        = map(string)
-  default     = {}
+  default = {
+    create = "40m",
+    delete = "40m",
+    update = "80m"
+  }
 }
 
 variable "option_group_timeouts" {
