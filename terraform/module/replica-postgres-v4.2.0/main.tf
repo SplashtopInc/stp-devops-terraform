@@ -50,6 +50,7 @@ module "master" {
   port     = local.port
 
   create_random_password = var.create_random_password
+  random_password_length = var.random_password_length
 
   multi_az               = true
   db_subnet_group_name   = var.db_subnet_group_name
