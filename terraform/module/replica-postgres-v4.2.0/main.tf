@@ -66,7 +66,8 @@ module "master" {
   deletion_protection     = var.deletion_protection
   storage_encrypted       = var.storage_encrypted
 
-  tags = local.tags
+  tags     = local.tags
+  timeouts = var.timeouts
 }
 
 ################################################################################
@@ -90,8 +91,9 @@ module "replica" {
   major_engine_version = local.major_engine_version
   instance_class       = local.instance_class
 
-  allocated_storage     = local.allocated_storage
-  max_allocated_storage = local.max_allocated_storage
+  allocated_storage            = local.allocated_storage
+  max_allocated_storage        = local.max_allocated_storage
+  performance_insights_enabled = var.performance_insights_enabled
 
   port = local.port
 
@@ -108,4 +110,6 @@ module "replica" {
   storage_encrypted       = var.storage_encrypted
 
   tags = local.tags
+
+  timeouts = var.timeouts
 }
