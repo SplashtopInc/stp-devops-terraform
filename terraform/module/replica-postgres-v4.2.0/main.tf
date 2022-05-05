@@ -71,6 +71,7 @@ module "master" {
 ################################################################################
 # Replica DB
 ################################################################################
+#tfsec:ignore:aws-rds-specify-backup-retention:
 #tfsec:ignore:aws-rds-enable-performance-insights:
 module "replica" {
   source  = "terraform-aws-modules/rds/aws"
@@ -100,7 +101,7 @@ module "replica" {
   backup_window                   = "03:00-06:00"
   enabled_cloudwatch_logs_exports = ["postgresql", "upgrade"]
 
-  backup_retention_period = 5
+  backup_retention_period = 0
   skip_final_snapshot     = true
   deletion_protection     = var.deletion_protection
   storage_encrypted       = var.storage_encrypted
