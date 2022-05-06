@@ -1,4 +1,6 @@
 provider "kustomization" {
+  alias = "example"
+
   # one of kubeconfig_path, kubeconfig_raw or kubeconfig_incluster must be set
 
   ### kubeconfig_path - Path to a kubeconfig file. Can be set using KUBECONFIG_PATH environment variable. ###
