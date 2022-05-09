@@ -33,7 +33,7 @@ module "acm" {
   wait_for_validation = var.wait_for_validation
 
   tags = {
-    Name        = local.domain_name
+    Name        = local.route53_zone_name
     Project     = var.project
     Environment = var.environment
   }
