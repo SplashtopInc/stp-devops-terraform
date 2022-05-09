@@ -5,19 +5,20 @@ locals {
   domain = var.domain_name
 
   # Removing trailing dot from domain - just to be sure :)
-  domain_name = trimsuffix(local.domain, ".")
+  domain_name       = trimsuffix(local.domain, ".")
+  route53_zone_name = trimprefix(local.domain, "*.")
 }
 
 data "aws_route53_zone" "this" {
   count = local.use_existing_route53_zone ? 1 : 0
 
-  name         = local.domain_name
+  name         = local.route53_zone_name
   private_zone = false
 }
 
 resource "aws_route53_zone" "this" {
   count = !local.use_existing_route53_zone ? 1 : 0
-  name  = local.domain_name
+  name  = local.route53_zone_name
 }
 
 module "acm" {
