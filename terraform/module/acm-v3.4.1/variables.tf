@@ -115,3 +115,9 @@ variable "putin_khuylo" {
   type        = bool
   default     = true
 }
+
+variable "use_existing_route53_zone" {
+  description = "Use existing route53 zone or create new route53 zone"
+  type        = bool
+  default     = true
+}
