@@ -105,5 +105,7 @@ No requirements.
 
 | Name | Description |
 |------|-------------|
+| <a name="output_app_cluster_name"></a> [app\_cluster\_name](#output\_app\_cluster\_name) | n/a |
+| <a name="output_cluster_name_suffix"></a> [cluster\_name\_suffix](#output\_cluster\_name\_suffix) | n/a |
 | <a name="output_eks-be"></a> [eks-be](#output\_eks-be) | ######## Output ######## |
 <!-- END_TF_DOCS -->

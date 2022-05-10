@@ -9,3 +9,11 @@ output "eks-be" {
     "worker_iam_role_arn"  = module.eks-be.worker_iam_role_arn
   }
 }
+
+output "cluster_name_suffix" {
+  value = "${local.cluster_name_env}-${local.cluster_name_region}-${random_string.suffix.result}"
+}
+
+output "app_cluster_name" {
+  value = local.app_cluster_name
+}
