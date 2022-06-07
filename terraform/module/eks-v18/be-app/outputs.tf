@@ -190,3 +190,8 @@ output "eks-be" {
 output "be_devops_kubelet_args" {
   value = local.be_devops_kubelet_args
 }
+
+output "decode_cluster_certificate_authority_data" {
+  description = "decode certificate data required to communicate with the cluster"
+  value       = base64decode(module.eks.cluster_certificate_authority_data)
+}
