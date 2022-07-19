@@ -51,8 +51,8 @@ module "db1" {
   engine_version = var.db_engine_version
   engine_mode    = "provisioned" #  Valid values: global, multimaster, parallelquery, provisioned, serverless. Defaults to: provisioned
 
-  vpc_id  = (var.vpc_db_vpc_id != "" ? var.vpc_db_vpc_id : data.aws_vpc.stp-vpc-db.id)
-  subnets = (var.vpc-db-all-subnets != [] ? var.vpc-db-all-subnets : data.aws_subnet_ids.stp-vpc-db-all.ids)
+  vpc_id  = var.vpc_db_vpc_id != "" ? var.vpc_db_vpc_id : data.aws_vpc.stp-vpc-db.id
+  subnets = length(var.vpc-db-all-subnets) != 0 ? var.vpc-db-all-subnets : data.aws_subnets.stp-vpc-db-all.ids
 
   username = var.db_master_username
 
@@ -140,8 +140,8 @@ module "db2" {
   engine_version = var.db_engine_version
   engine_mode    = "provisioned" #  Valid values: global, multimaster, parallelquery, provisioned, serverless. Defaults to: provisioned
 
-  vpc_id  = (var.vpc_db_vpc_id != "" ? var.vpc_db_vpc_id : data.aws_vpc.stp-vpc-db.id)
-  subnets = (var.vpc-db-all-subnets != "" ? var.vpc-db-all-subnets : data.aws_subnet_ids.stp-vpc-db-all.ids)
+  vpc_id  = var.vpc_db_vpc_id != "" ? var.vpc_db_vpc_id : data.aws_vpc.stp-vpc-db.id
+  subnets = length(var.vpc-db-all-subnets) != 0 ? var.vpc-db-all-subnets : data.aws_subnets.stp-vpc-db-all.ids
 
   username = var.db_master_username
 
