@@ -7,8 +7,8 @@ No requirements.
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.10.0 |
-| <a name="provider_random"></a> [random](#provider\_random) | 3.1.2 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
+| <a name="provider_random"></a> [random](#provider\_random) | n/a |
 
 ## Modules
 
@@ -24,7 +24,7 @@ No modules.
 | [aws_security_group.redis-sg](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group) | resource |
 | [random_password.redis_auth_token](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
 | [random_string.suffix](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string) | resource |
-| [aws_subnet_ids.stp-vpc-db-private](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/subnet_ids) | data source |
+| [aws_subnets.stp-vpc-db-private](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/subnets) | data source |
 | [aws_vpc.stp-vpc-db](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/vpc) | data source |
 
 ## Inputs
@@ -58,5 +58,9 @@ No modules.
 | Name | Description |
 |------|-------------|
 | <a name="output_Redis_AuthToken"></a> [Redis\_AuthToken](#output\_Redis\_AuthToken) | n/a |
-| <a name="output_Redis_Nodes"></a> [Redis\_Nodes](#output\_Redis\_Nodes) | ## Output ### |
+| <a name="output_Redis_Nodes"></a> [Redis\_Nodes](#output\_Redis\_Nodes) | n/a |
+| <a name="output_master_redis_address"></a> [master\_redis\_address](#output\_master\_redis\_address) | n/a |
+| <a name="output_noaof_redis_address"></a> [noaof\_redis\_address](#output\_noaof\_redis\_address) | n/a |
+| <a name="output_timeout_redis_address"></a> [timeout\_redis\_address](#output\_timeout\_redis\_address) | n/a |
+| <a name="output_websocket_redis_address"></a> [websocket\_redis\_address](#output\_websocket\_redis\_address) | n/a |
 <!-- END_TF_DOCS -->

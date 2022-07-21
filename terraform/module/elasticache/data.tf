@@ -4,8 +4,11 @@ data "aws_vpc" "stp-vpc-db" {
   }
 }
 
-data "aws_subnet_ids" "stp-vpc-db-private" {
-  vpc_id = data.aws_vpc.stp-vpc-db.id
+data "aws_subnets" "stp-vpc-db-private" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.stp-vpc-db.id]
+  }
 
   filter {
     name = "tag:Name"
@@ -14,3 +17,5 @@ data "aws_subnet_ids" "stp-vpc-db-private" {
     ]
   }
 }
+
+
