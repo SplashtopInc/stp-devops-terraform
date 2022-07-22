@@ -524,3 +524,21 @@ data "aws_iam_policy_document" "ebs" {
     }
   }
 }
+
+################################################################################
+# Secret Manager Module
+################################################################################
+
+locals {
+  secretsmanager_name        = "${var.environment}/data/${var.aws_account_name}/${local.app_cluster_name}/${local.api_name}"
+  secretsmanager_description = "Vault secrets for ${local.app_cluster_name}"
+}
+#tfsec:ignore:aws-ssm-secret-use-customer-key
+resource "aws_secretsmanager_secret" "this" {
+  #checkov:skip=CKV_AWS_149: not use KMS key
+  #ts:skip=AWS.AKK.DP.HIGH.0012 skip
+  #ts:skip=AWS.SecretsManagerSecret.DP.MEDIUM.0036 skip
+  name                    = local.secretsmanager_name
+  description             = local.secretsmanager_description
+  recovery_window_in_days = 7
+}
