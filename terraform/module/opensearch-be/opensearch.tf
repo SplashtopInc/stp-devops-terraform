@@ -1,4 +1,12 @@
-
+resource "random_password" "be_elasticsearch_master_user_password" {
+  count            = var.be_elasticsearch_is_production ? 1 : 0
+  length           = 32
+  lower            = true
+  upper            = true
+  number           = true
+  special          = true
+  override_special = "!&#$^<>-"
+}
 
 # https://github.com/cloudposse/terraform-aws-elasticsearch/issues/5#issuecomment-737279024
 resource "aws_iam_service_linked_role" "elasticsearch_service_linked_role" {
@@ -9,48 +17,50 @@ resource "aws_iam_service_linked_role" "elasticsearch_service_linked_role" {
 resource "aws_elasticsearch_domain_policy" "be_elasticsearch_domain_policy" {
   domain_name = aws_elasticsearch_domain.be_elasticsearch_domain.domain_name
 
-  access_policies = <<POLICIES
-{
-  "Version": "2012-10-17",
-  "Statement": [
+  access_policies = jsonencode(
     {
-      "Effect": "Allow",
-      "Principal": {
-        "AWS": "*"
-      },
-      "Action": "es:ESHttp*",
-      "Resource": "arn:aws:es:${var.region}:${data.aws_caller_identity.current.account_id}:domain/${local.elasticache_cluster_domain}/*"
-    },
-    {
-      "Effect": "Deny",
-      "Principal": {
-        "AWS": "*"
-      },
-      "Action": "es:ESHttp*",
-      "Resource": "arn:aws:es:${var.region}:${data.aws_caller_identity.current.account_id}:domain/${local.elasticache_cluster_domain}/_dashboards*"
+      "Version" : "2012-10-17",
+      "Statement" : [
+        {
+          "Effect" : "Allow",
+          "Principal" : {
+            "AWS" : "*"
+          },
+          "Action" : "es:ESHttp*",
+          "Resource" : "arn:aws:es:${var.region}:${data.aws_caller_identity.current.account_id}:domain/${local.elasticache_cluster_domain}/*"
+        },
+        {
+          "Effect" : "Deny",
+          "Principal" : {
+            "AWS" : "*"
+          },
+          "Action" : "es:ESHttp*",
+          "Resource" : "arn:aws:es:${var.region}:${data.aws_caller_identity.current.account_id}:domain/${local.elasticache_cluster_domain}/_dashboards*"
+        }
+      ]
     }
-  ]
-}
-POLICIES
+  )
 }
 
 resource "aws_elasticsearch_domain" "be_elasticsearch_domain" {
+  #checkov:skip=CKV_AWS_247:
   #ts:skip=AWS.ElasticSearch.EKM.Medium.0768 skip
-  #ts:skip=AWS.Elasticsearch.Logging.Medium.0573 already add slow logs
-  #checkov:skip=CKV_AWS_137:The Elasticsearch is a public and limited ip address
-  #checkov:skip=CKV_AWS_247:Skip CMK
+  #ts:skip=AWS.Elasticsearch.Logging.Medium.0573 skip
+  #ts:skip=AC_AWS_0322 skip
   domain_name           = local.elasticache_cluster_domain
-  elasticsearch_version = "OpenSearch_1.1"
+  elasticsearch_version = var.be_elasticsearch_version
 
   vpc_options {
-    subnet_ids         = var.be_elasticsearch_multiaz ? data.aws_subnet_ids.stp_vpc_db_private.ids : toset([tolist(data.aws_subnet_ids.stp_vpc_db_private.ids)[0]])
+    subnet_ids         = var.be_elasticsearch_multiaz ? data.aws_subnets.stp_vpc_db_private.ids : toset([tolist(data.aws_subnets.stp_vpc_db_private.ids)[0]])
     security_group_ids = [aws_security_group.elasticsearch_sg.id]
   }
 
   advanced_security_options {
-    enabled = true
+    enabled                        = true
+    internal_user_database_enabled = true
     master_user_options {
-      master_user_arn = aws_iam_role.premium_inventory_opensearch_master_user.arn
+      master_user_name     = var.be_elasticsearch_master_user_name
+      master_user_password = var.be_elasticsearch_is_production ? random_password.be_elasticsearch_master_user_password[0].result : var.be_elasticsearch_nonprod_master_user_password
     }
   }
 
@@ -88,22 +98,22 @@ resource "aws_elasticsearch_domain" "be_elasticsearch_domain" {
   }
 
   log_publishing_options {
-    enabled                  = var.be_elasticsearch_search_logs_enabled
+    enabled                  = true
     cloudwatch_log_group_arn = aws_cloudwatch_log_group.elasticsearch_log_group_search_logs.arn
     log_type                 = "SEARCH_SLOW_LOGS"
   }
   log_publishing_options {
-    enabled                  = var.be_elasticsearch_index_logs_enabled
+    enabled                  = true
     cloudwatch_log_group_arn = aws_cloudwatch_log_group.elasticsearch_log_group_index_logs.arn
     log_type                 = "INDEX_SLOW_LOGS"
   }
   log_publishing_options {
-    enabled                  = var.be_elasticsearch_application_logs_enabled
+    enabled                  = true
     cloudwatch_log_group_arn = aws_cloudwatch_log_group.elasticsearch_log_group_application_logs.arn
     log_type                 = "ES_APPLICATION_LOGS"
   }
   log_publishing_options {
-    enabled                  = var.be_elasticsearch_audit_logs_enabled
+    enabled                  = true
     cloudwatch_log_group_arn = aws_cloudwatch_log_group.elasticsearch_log_group_audit_logs.arn
     log_type                 = "AUDIT_LOGS"
   }
@@ -119,29 +129,4 @@ resource "aws_elasticsearch_domain" "be_elasticsearch_domain" {
     aws_cloudwatch_log_group.elasticsearch_log_group_application_logs,
     aws_cloudwatch_log_group.elasticsearch_log_group_audit_logs
   ]
-}
-
-
-resource "aws_security_group" "elasticsearch_sg" {
-  #ts:skip=AC_AWS_0322 skip
-  description = "Security Group - ${local.elasticache_cluster_domain}"
-  name_prefix = "${local.elasticache_cluster_domain}-sg"
-  vpc_id      = data.aws_vpc.stp_vpc_db.id
-
-  # Allow internal
-  ingress {
-    description = "Allow access from local LAN for Elasticsearch"
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = [
-      "10.0.0.0/8",
-      "172.16.0.0/12",
-      "192.168.0.0/16"
-    ]
-  }
-
-  tags = {
-    Name = "${local.elasticache_cluster_domain}-sg"
-  }
 }
