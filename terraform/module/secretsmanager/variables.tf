@@ -31,8 +31,18 @@ variable "secret_name" {
   default     = ""
 }
 
-variable "description" {
+variable "secret_description" {
   description = "secretsmanager_description"
   type        = string
   default     = ""
+}
+
+# The map here can come from other supported configurations
+# like locals, resource attribute, map() built-in, etc.
+variable "secret_value" {
+  default = {
+    key1 = "value1"
+  }
+
+  type = map(string)
 }

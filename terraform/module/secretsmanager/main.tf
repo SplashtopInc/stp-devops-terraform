@@ -4,7 +4,7 @@
 
 locals {
   secretsmanager_name        = "${var.environment}/${var.account}/${var.secret_name}"
-  secretsmanager_description = var.description
+  secretsmanager_description = var.secret_description
 }
 #tfsec:ignore:aws-ssm-secret-use-customer-key
 resource "aws_secretsmanager_secret" "this" {
@@ -14,4 +14,13 @@ resource "aws_secretsmanager_secret" "this" {
   name                    = local.secretsmanager_name
   description             = local.secretsmanager_description
   recovery_window_in_days = 7
+}
+
+################################################################################
+# Secret Manager version
+################################################################################
+
+resource "aws_secretsmanager_secret_version" "redis" {
+  secret_id     = aws_secretsmanager_secret.this.id
+  secret_string = jsonencode(var.secret_value)
 }
