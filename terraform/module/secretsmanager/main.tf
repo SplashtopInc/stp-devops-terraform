@@ -20,7 +20,7 @@ resource "aws_secretsmanager_secret" "this" {
 # Secret Manager version
 ################################################################################
 
-resource "aws_secretsmanager_secret_version" "redis" {
+resource "aws_secretsmanager_secret_version" "this" {
   secret_id     = aws_secretsmanager_secret.this.id
   secret_string = jsonencode(var.secret_value)
 }
