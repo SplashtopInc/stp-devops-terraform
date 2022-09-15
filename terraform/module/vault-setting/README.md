@@ -52,5 +52,8 @@ No modules.
 
 | Name | Description |
 |------|-------------|
+| <a name="output_kubernetes_ca_cert"></a> [kubernetes\_ca\_cert](#output\_kubernetes\_ca\_cert) | n/a |
+| <a name="output_kubernetes_host"></a> [kubernetes\_host](#output\_kubernetes\_host) | n/a |
 | <a name="output_vault"></a> [vault](#output\_vault) | n/a |
+| <a name="output_vault_k8s_auth_jwt"></a> [vault\_k8s\_auth\_jwt](#output\_vault\_k8s\_auth\_jwt) | n/a |
 <!-- END_TF_DOCS -->

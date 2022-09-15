@@ -13,7 +13,7 @@ resource "vault_auth_backend" "kubernetes" {
 resource "vault_kubernetes_auth_backend_config" "config" {
   backend                = vault_auth_backend.kubernetes.path
   token_reviewer_jwt     = local.vault_k8s_auth_jwt
-  disable_iss_validation = false
+  disable_iss_validation = true
   disable_local_ca_jwt   = false
   kubernetes_ca_cert     = var.vault_k8s_ca
   kubernetes_host        = var.vault_k8s_auth_host
