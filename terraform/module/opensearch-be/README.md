@@ -7,8 +7,8 @@ No requirements.
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.25.0 |
-| <a name="provider_random"></a> [random](#provider\_random) | 3.3.2 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
+| <a name="provider_random"></a> [random](#provider\_random) | n/a |
 
 ## Modules
 
@@ -79,6 +79,4 @@ No modules.
 | <a name="output_OpenSearch_Master_User_Info"></a> [OpenSearch\_Master\_User\_Info](#output\_OpenSearch\_Master\_User\_Info) | n/a |
 | <a name="output_Premium_Inventory_Lambda_Execution_Role_ARN"></a> [Premium\_Inventory\_Lambda\_Execution\_Role\_ARN](#output\_Premium\_Inventory\_Lambda\_Execution\_Role\_ARN) | ## Output ### |
 | <a name="output_Severless_Framework_Deployment_Request_Resources"></a> [Severless\_Framework\_Deployment\_Request\_Resources](#output\_Severless\_Framework\_Deployment\_Request\_Resources) | ## Output ### |
-| <a name="output_nonprod_password"></a> [nonprod\_password](#output\_nonprod\_password) | n/a |
-| <a name="output_opensearch_endpoint"></a> [opensearch\_endpoint](#output\_opensearch\_endpoint) | n/a |
 <!-- END_TF_DOCS -->
