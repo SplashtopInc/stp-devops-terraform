@@ -19,6 +19,7 @@ No modules.
 |------|------|
 | [aws_secretsmanager_secret.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/secretsmanager_secret) | resource |
 | [aws_secretsmanager_secret_version.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/secretsmanager_secret_version) | resource |
+| [aws_secretsmanager_secret_version.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/secretsmanager_secret_version) | data source |
 
 ## Inputs
 
@@ -29,6 +30,7 @@ No modules.
 | <a name="input_project"></a> [project](#input\_project) | project name of the resource | `string` | `""` | no |
 | <a name="input_region"></a> [region](#input\_region) | region for the resource | `string` | `""` | no |
 | <a name="input_secret_description"></a> [secret\_description](#input\_secret\_description) | secretsmanager\_description | `string` | `""` | no |
+| <a name="input_secret_key"></a> [secret\_key](#input\_secret\_key) | secretsmanager key value | `string` | `"gh_token"` | no |
 | <a name="input_secret_name"></a> [secret\_name](#input\_secret\_name) | secretsmanager\_name | `string` | `""` | no |
 | <a name="input_secret_value"></a> [secret\_value](#input\_secret\_value) | The map here can come from other supported configurations like locals, resource attribute, map() built-in, etc. | `map(string)` | <pre>{<br>  "key1": "value1"<br>}</pre> | no |
 
@@ -36,5 +38,6 @@ No modules.
 
 | Name | Description |
 |------|-------------|
+| <a name="output_github-user-token"></a> [github-user-token](#output\_github-user-token) | gh\_token secret value |
 | <a name="output_secretsmanager_secret_name"></a> [secretsmanager\_secret\_name](#output\_secretsmanager\_secret\_name) | secrets manager for stored secret |
 <!-- END_TF_DOCS -->

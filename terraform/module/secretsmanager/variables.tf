@@ -46,3 +46,9 @@ variable "secret_value" {
 
   type = map(string)
 }
+
+variable "secret_key" {
+  description = "secretsmanager key value"
+  type        = string
+  default     = "gh_token"
+}
