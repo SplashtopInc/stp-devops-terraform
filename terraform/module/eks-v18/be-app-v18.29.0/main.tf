@@ -126,6 +126,10 @@ module "eks" {
     }
   }
 
+  # Dynamic Blocks documents a way to create multiple repeatable nested blocks within a resource or other construct.
+  # Dynamic blocks don't work on modules.
+  # https://github.com/terraform-aws-modules/terraform-aws-eks/issues/897
+
   self_managed_node_groups = {
     ## api node group
     api = {
