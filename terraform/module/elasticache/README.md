@@ -7,8 +7,8 @@ No requirements.
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
-| <a name="provider_random"></a> [random](#provider\_random) | n/a |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.22.0 |
+| <a name="provider_random"></a> [random](#provider\_random) | 3.3.2 |
 
 ## Modules
 
@@ -59,8 +59,8 @@ No modules.
 |------|-------------|
 | <a name="output_Redis_AuthToken"></a> [Redis\_AuthToken](#output\_Redis\_AuthToken) | n/a |
 | <a name="output_Redis_Nodes"></a> [Redis\_Nodes](#output\_Redis\_Nodes) | n/a |
-| <a name="output_master_redis_address"></a> [master\_redis\_address](#output\_master\_redis\_address) | n/a |
-| <a name="output_noaof_redis_address"></a> [noaof\_redis\_address](#output\_noaof\_redis\_address) | n/a |
-| <a name="output_timeout_redis_address"></a> [timeout\_redis\_address](#output\_timeout\_redis\_address) | n/a |
-| <a name="output_websocket_redis_address"></a> [websocket\_redis\_address](#output\_websocket\_redis\_address) | n/a |
+| <a name="output_master_redis_url"></a> [master\_redis\_url](#output\_master\_redis\_url) | n/a |
+| <a name="output_noaof_redis_url"></a> [noaof\_redis\_url](#output\_noaof\_redis\_url) | n/a |
+| <a name="output_timeout_redis_url"></a> [timeout\_redis\_url](#output\_timeout\_redis\_url) | n/a |
+| <a name="output_websocket_redis_url"></a> [websocket\_redis\_url](#output\_websocket\_redis\_url) | n/a |
 <!-- END_TF_DOCS -->

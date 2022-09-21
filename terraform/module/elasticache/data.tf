@@ -17,5 +17,3 @@ data "aws_subnets" "stp-vpc-db-private" {
     ]
   }
 }
-
-
