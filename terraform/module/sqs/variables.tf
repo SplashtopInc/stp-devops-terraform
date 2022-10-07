@@ -1,7 +1,7 @@
 ### Site information ###
 variable "region" {
   type    = string
-  default = "us-west-2"
+  default = ""
 }
 variable "environment" {
   type    = string
@@ -30,4 +30,10 @@ variable "shoryuken_sqs_list_dead" {
     "be-async-dead-low",
     "be-async-dead-delay"
   ]
+}
+
+variable "sqs_managed_sse_enabled" {
+  description = "Boolean to enable server-side encryption (SSE) of message content with SQS-owned encryption keys"
+  type        = bool
+  default     = true
 }

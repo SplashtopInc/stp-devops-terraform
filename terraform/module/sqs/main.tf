@@ -9,6 +9,7 @@ resource "aws_sqs_queue" "shoryuken_sqs_dead" {
   max_message_size           = 262144
   delay_seconds              = 0
   receive_wait_time_seconds  = 0
+  sqs_managed_sse_enabled    = var.sqs_managed_sse_enabled
 
   policy = <<POLICY
 {
@@ -208,6 +209,7 @@ resource "aws_sqs_queue" "src_command_queue_dead" {
   max_message_size           = 262144
   delay_seconds              = 0
   receive_wait_time_seconds  = 0
+  sqs_managed_sse_enabled    = var.sqs_managed_sse_enabled
 
   policy = <<POLICY
 {

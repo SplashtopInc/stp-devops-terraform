@@ -7,7 +7,7 @@ No requirements.
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.11.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.13.0 |
 
 ## Modules
 
@@ -37,6 +37,7 @@ No modules.
 | <a name="input_project"></a> [project](#input\_project) | n/a | `string` | `"be"` | no |
 | <a name="input_region"></a> [region](#input\_region) | ## Site information ### | `string` | `"us-west-2"` | no |
 | <a name="input_shoryuken_sqs_list_dead"></a> [shoryuken\_sqs\_list\_dead](#input\_shoryuken\_sqs\_list\_dead) | SQS queues list of dead for shoryuken | `list(string)` | <pre>[<br>  "be-async-dead-high",<br>  "be-async-dead-low",<br>  "be-async-dead-delay"<br>]</pre> | no |
+| <a name="input_sqs_managed_sse_enabled"></a> [sqs\_managed\_sse\_enabled](#input\_sqs\_managed\_sse\_enabled) | n/a | `bool` | `true` | no |
 
 ## Outputs
 
