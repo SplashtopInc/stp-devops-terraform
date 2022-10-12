@@ -25,5 +25,5 @@ output "vpc-be-id" {
 }
 
 output "stp-vpc-backend-private-subnet-ids" {
-  value = data.aws_subnet_ids.stp-vpc-backend-private.ids
+  value = data.aws_subnets.stp-vpc-backend-private.ids
 }

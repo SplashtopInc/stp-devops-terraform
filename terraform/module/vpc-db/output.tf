@@ -24,10 +24,10 @@ output "vpc-db-id" {
 }
 
 output "stp-vpc-db-private-subnet-ids" {
-  value = data.aws_subnet_ids.stp-vpc-db-private.ids
+  value = data.aws_subnets.stp-vpc-db-private.ids
 }
 
 
 output "stp-vpc-db-all-subnet-ids" {
-  value = data.aws_subnet_ids.stp-vpc-db-all.ids
+  value = data.aws_subnets.stp-vpc-db-all.ids
 }
