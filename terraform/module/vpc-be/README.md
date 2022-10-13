@@ -1,7 +1,10 @@
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
-No requirements.
+| Name | Version |
+|------|---------|
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13.1 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.73 |
 
 ## Providers
 
@@ -22,19 +25,20 @@ No requirements.
 | [aws_availability_zones.available](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/availability_zones) | data source |
 | [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
 | [aws_eip.be_alloc_eip](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/eip) | data source |
-| [aws_subnet_ids.stp-vpc-backend-private](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/subnet_ids) | data source |
+| [aws_subnets.stp-vpc-backend-private](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/subnets) | data source |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_assume_role"></a> [assume\_role](#input\_assume\_role) | n/a | `string` | `""` | no |
+| <a name="input_account_name"></a> [account\_name](#input\_account\_name) | the aws account | `string` | `""` | no |
+| <a name="input_assume_role"></a> [assume\_role](#input\_assume\_role) | the aws role to be assigned to | `string` | `""` | no |
 | <a name="input_domain"></a> [domain](#input\_domain) | ## Site information ### | `string` | `"splashtop.de"` | no |
-| <a name="input_environment"></a> [environment](#input\_environment) | n/a | `string` | `""` | no |
-| <a name="input_name"></a> [name](#input\_name) | ################### Backend | `string` | `"stp-vpc-backend"` | no |
-| <a name="input_profile"></a> [profile](#input\_profile) | AWS privilege | `string` | `""` | no |
-| <a name="input_project"></a> [project](#input\_project) | n/a | `string` | `""` | no |
-| <a name="input_region"></a> [region](#input\_region) | n/a | `string` | `""` | no |
+| <a name="input_environment"></a> [environment](#input\_environment) | the environment ex: prod, qa, test | `string` | `""` | no |
+| <a name="input_name"></a> [name](#input\_name) | vpc name | `string` | `"stp-vpc-backend"` | no |
+| <a name="input_project"></a> [project](#input\_project) | the project name | `string` | `""` | no |
+| <a name="input_region"></a> [region](#input\_region) | the aws region | `string` | `""` | no |
+| <a name="input_short_region"></a> [short\_region](#input\_short\_region) | the short name of the aws region | `string` | `""` | no |
 | <a name="input_vpc_backend_az_end"></a> [vpc\_backend\_az\_end](#input\_vpc\_backend\_az\_end) | n/a | `number` | `3` | no |
 | <a name="input_vpc_backend_az_start"></a> [vpc\_backend\_az\_start](#input\_vpc\_backend\_az\_start) | n/a | `number` | `0` | no |
 | <a name="input_vpc_backend_cidr"></a> [vpc\_backend\_cidr](#input\_vpc\_backend\_cidr) | n/a | `string` | `"10.21.0.0/16"` | no |

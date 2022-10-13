@@ -1,34 +1,47 @@
 ### provider ###
 
 # AWS privilege
-variable "profile" {
-  type    = string
-  default = ""
-}
 variable "assume_role" {
-  type    = string
-  default = ""
+  description = "the aws role to be assigned to"
+  type        = string
+  default     = ""
+}
+
+variable "account_name" {
+  description = "the aws account"
+  type        = string
+  default     = ""
 }
 
 variable "region" {
-  type    = string
-  default = ""
+  description = "the aws region"
+  type        = string
+  default     = ""
+}
+
+variable "short_region" {
+  description = "the short name of the aws region"
+  type        = string
+  default     = ""
 }
 
 variable "project" {
-  type    = string
-  default = ""
+  description = "the project name"
+  type        = string
+  default     = ""
 }
 
 variable "environment" {
-  type    = string
-  default = ""
+  description = "the environment ex: prod, qa, test"
+  type        = string
+  default     = ""
 }
 ####################
 # Backend
 variable "name" {
-  type    = string
-  default = "stp-vpc-backend"
+  description = "vpc name"
+  type        = string
+  default     = "stp-vpc-backend"
 }
 
 variable "vpc_backend_az_start" {
