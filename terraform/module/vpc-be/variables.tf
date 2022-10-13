@@ -7,20 +7,8 @@ variable "assume_role" {
   default     = ""
 }
 
-variable "account_name" {
-  description = "the aws account"
-  type        = string
-  default     = ""
-}
-
 variable "region" {
   description = "the aws region"
-  type        = string
-  default     = ""
-}
-
-variable "short_region" {
-  description = "the short name of the aws region"
   type        = string
   default     = ""
 }

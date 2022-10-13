@@ -1,38 +1,29 @@
+### provider ###
 
-# AWS account name for SQS naming prefix (for temporary)
-variable "aws_account_name" {
-  type    = string
-  default = ""
-}
-
+# AWS privilege
 variable "assume_role" {
-  type    = string
-  default = ""
+  description = "the aws role to be assigned to"
+  type        = string
+  default     = ""
 }
 
-variable "profile" {
-  type    = string
-  default = ""
-}
-
-### Site information ###
-variable "domain" {
-  type    = string
-  default = "splashtop.de"
-}
 variable "region" {
-  type    = string
-  default = "us-west-2"
-}
-variable "environment" {
-  type    = string
-  default = ""
-}
-variable "project" {
-  type    = string
-  default = ""
+  description = "the aws region"
+  type        = string
+  default     = ""
 }
 
+variable "project" {
+  description = "the project name"
+  type        = string
+  default     = ""
+}
+
+variable "environment" {
+  description = "the environment ex: prod, qa, test"
+  type        = string
+  default     = ""
+}
 
 ### VPCs ###
 # DB

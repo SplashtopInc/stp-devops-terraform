@@ -1,43 +1,26 @@
-### System ###
-# Terraform state bucket
-variable "state_bucket" {
-  type    = string
-  default = ""
-}
 # AWS privilege
-variable "profile" {
-  type    = string
-  default = "default"
-}
 variable "assume_role" {
-  type    = string
-  default = ""
+  description = "the aws role to be assigned to"
+  type        = string
+  default     = ""
 }
 
-### Site information ###
-variable "domain" {
-  type    = string
-  default = "splashtop.de"
-}
 variable "region" {
-  type    = string
-  default = "us-west-2"
+  description = "the aws region"
+  type        = string
+  default     = ""
 }
-variable "environment" {
-  type    = string
-  default = "prod"
-}
+
 variable "project" {
-  type    = string
-  default = "be"
+  description = "the project name"
+  type        = string
+  default     = ""
 }
-variable "module" {
-  type    = string
-  default = "eks"
-}
-variable "owner" {
-  type    = string
-  default = "user"
+
+variable "environment" {
+  description = "the environment ex: prod, qa, test"
+  type        = string
+  default     = ""
 }
 
 ### VPCs ###
