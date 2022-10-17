@@ -94,6 +94,7 @@ resource "aws_iam_policy" "vpc_flow_log_cloudwatch" {
 }
 
 data "aws_iam_policy_document" "vpc_flow_log_cloudwatch" {
+  #checkov:skip=CKV_AWS_111: skip 
   count = local.create_flow_log_cloudwatch_iam_role ? 1 : 0
 
   statement {

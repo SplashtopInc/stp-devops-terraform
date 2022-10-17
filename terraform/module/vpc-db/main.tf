@@ -2,6 +2,7 @@ module "vpc-db" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "3.6.0"
 
+  create_vpc           = var.create_vpc
   name                 = "stp-vpc-db"
   cidr                 = var.vpc_db_cidr
   azs                  = slice(data.aws_availability_zones.available.names, var.vpc_db_az_start, var.vpc_db_az_end)

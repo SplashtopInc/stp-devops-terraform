@@ -3,6 +3,7 @@ module "vpc-be" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "3.6.0"
 
+  create_vpc      = var.create_vpc
   name            = var.name
   cidr            = var.vpc_backend_cidr
   azs             = slice(data.aws_availability_zones.available.names, var.vpc_backend_az_start, var.vpc_backend_az_end)

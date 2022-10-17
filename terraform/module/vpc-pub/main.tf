@@ -2,6 +2,7 @@
 module "vpc-pub" {
   source = "../vpc-pub-v3.6.0"
 
+  create_vpc      = var.create_vpc
   name            = var.name
   cidr            = var.vpc_pub_cidr
   azs             = slice(data.aws_availability_zones.available.names, var.vpc_pub_az_start, var.vpc_pub_az_end)
