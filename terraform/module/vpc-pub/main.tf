@@ -66,6 +66,7 @@ module "vpc-pub" {
 
 ### (prod) Whitelist Security Group for office IPs ###
 resource "aws_security_group" "stp-office-ip-whitelist" {
+  count = var.create_vpc ? 1 : 0
   # checkov:skip=CKV2_AWS_5: WILL ATTACH TO ALB IN HELM
   name        = "stp-office-ip-whitelist"
   description = "Whitelist IPs of offices for PRODUCTION"
@@ -112,6 +113,7 @@ resource "aws_security_group" "stp-office-ip-whitelist" {
 ### (non-prod) Whitelist Security Group for office IPs ###
 resource "aws_security_group" "stp-ip-whitelist-office-nonprod" {
   # checkov:skip=CKV2_AWS_5: WILL ATTACH TO ALB IN HELM
+  count       = var.create_vpc ? 1 : 0
   name        = "stp-ip-whitelist-office-nonprod"
   description = "Whitelist IPs of offices for non-production"
   vpc_id      = module.vpc-pub.vpc_id
@@ -167,6 +169,7 @@ resource "aws_security_group" "stp-ip-whitelist-office-nonprod" {
 ### (non-prod) Whitelist Security Group for outside IPs ###
 resource "aws_security_group" "stp-ip-whitelist-outside-nonprod" {
   # checkov:skip=CKV2_AWS_5: WILL ATTACH TO ALB IN HELM
+  count       = var.create_vpc ? 1 : 0
   name        = "stp-ip-whitelist-outside-nonprod"
   description = "Whitelist IPs of outside for non-production"
   vpc_id      = module.vpc-pub.vpc_id

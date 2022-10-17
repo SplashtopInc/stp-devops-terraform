@@ -13,9 +13,9 @@ output "vpc_pub" {
     "08_Internet_Gateway_ID"            = module.vpc-pub.igw_id
     "09_NAT_Public_IP(s)"               = var.vpc_pub_reuse_nat_ips ? compact(data.aws_eip.pub_alloc_eip[*].public_ip) : module.vpc-pub.nat_public_ips
     "10_NAT_Gateway_ID(s)"              = module.vpc-pub.natgw_ids
-    "11_SG_Office_Whitelist_4_Prod"     = resource.aws_security_group.stp-office-ip-whitelist.name
-    "12_SG_Office_Whitelist_4_nonProd"  = resource.aws_security_group.stp-ip-whitelist-office-nonprod.name
-    "13_SG_Outside_Whitelist_4_nonProd" = resource.aws_security_group.stp-ip-whitelist-outside-nonprod.name
+    "11_SG_Office_Whitelist_4_Prod"     = resource.aws_security_group.stp-office-ip-whitelist[*].name
+    "12_SG_Office_Whitelist_4_nonProd"  = resource.aws_security_group.stp-ip-whitelist-office-nonprod[*].name
+    "13_SG_Outside_Whitelist_4_nonProd" = resource.aws_security_group.stp-ip-whitelist-outside-nonprod[*].name
   }
 }
 
