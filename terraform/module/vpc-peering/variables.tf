@@ -1,45 +1,37 @@
-### System ###
-# Terraform state bucket
-variable "state_bucket" {
-  type    = string
-  default = ""
-}
+### provider ###
+
 # AWS privilege
-variable "profile" {
-  type    = string
-  default = ""
-}
 variable "assume_role" {
-  type    = string
-  default = ""
-}
-# AWS account name for SQS naming prefix (for temporary)
-variable "aws_account_name" {
-  type    = string
-  default = ""
-}
-
-variable "project" {
-  type    = string
-  default = ""
-}
-
-variable "module" {
-  type    = string
-  default = "eks"
-}
-
-variable "environment" {
-  type    = string
-  default = ""
+  description = "the aws role to be assigned to"
+  type        = string
+  default     = ""
 }
 
 variable "region" {
-  type    = string
-  default = ""
+  description = "the aws region"
+  type        = string
+  default     = ""
 }
 
-## Passing outputs between modules
+variable "project" {
+  description = "the project name"
+  type        = string
+  default     = ""
+}
+
+variable "environment" {
+  description = "the environment ex: prod, qa, test"
+  type        = string
+  default     = ""
+}
+
+variable "enabled" {
+  description = "Set to false to prevent the module from creating any resources"
+  type        = bool
+  default     = true
+}
+
+## 
 variable "vpc_be_id" {
   description = "vpc be module outputs the ID under the name vpc_be_id"
   type        = string

@@ -7,6 +7,7 @@ module "vpc-peering-be2db" {
   stage     = var.environment
   name      = "be2db"
 
+  enabled                                   = var.enabled
   auto_accept                               = true
   requestor_allow_remote_vpc_dns_resolution = false
   acceptor_allow_remote_vpc_dns_resolution  = true
@@ -20,7 +21,6 @@ module "vpc-peering-be2db" {
     Name        = "vpc-peering-be2db"
     Project     = var.project
     Environment = var.environment
-    Module      = var.module
   }
 }
 
@@ -34,6 +34,7 @@ module "vpc-peering-pub2db" {
   stage     = var.environment
   name      = "pub2db"
 
+  enabled                                   = var.enabled
   auto_accept                               = true
   requestor_allow_remote_vpc_dns_resolution = false
   acceptor_allow_remote_vpc_dns_resolution  = true
@@ -47,7 +48,6 @@ module "vpc-peering-pub2db" {
     Name        = "vpc-peering-pub2db"
     Project     = var.project
     Environment = var.environment
-    Module      = var.module
   }
 }
 
@@ -60,6 +60,7 @@ module "vpc-peering-pub2be" {
   stage     = var.environment
   name      = "pub2be"
 
+  enabled                                   = var.enabled
   auto_accept                               = true
   requestor_allow_remote_vpc_dns_resolution = true
   acceptor_allow_remote_vpc_dns_resolution  = true
@@ -73,6 +74,5 @@ module "vpc-peering-pub2be" {
     Name        = "vpc-peering-pub2be"
     Project     = var.project
     Environment = var.environment
-    Module      = var.module
   }
 }
