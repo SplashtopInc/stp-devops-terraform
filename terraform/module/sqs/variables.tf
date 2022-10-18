@@ -1,15 +1,26 @@
 ### Site information ###
+variable "assume_role" {
+  description = "the aws role to be assigned to"
+  type        = string
+  default     = ""
+}
+
 variable "region" {
-  type    = string
-  default = ""
+  description = "the aws region"
+  type        = string
+  default     = ""
 }
-variable "environment" {
-  type    = string
-  default = "prod"
-}
+
 variable "project" {
-  type    = string
-  default = "be"
+  description = "the project name"
+  type        = string
+  default     = ""
+}
+
+variable "environment" {
+  description = "the environment ex: prod, qa, test"
+  type        = string
+  default     = ""
 }
 
 variable "owner" {
