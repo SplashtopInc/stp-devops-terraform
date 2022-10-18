@@ -3,7 +3,7 @@ resource "random_password" "redis_auth_token" {
   length           = 32
   lower            = true
   upper            = true
-  number           = true
+  numeric          = true
   special          = false      # No special for now
   override_special = "!&#$^<>-" # EC Redis only support restricted characters
 }
