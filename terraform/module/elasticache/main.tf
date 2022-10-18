@@ -1,5 +1,5 @@
 resource "random_password" "redis_auth_token" {
-  count            = length(var.redis_nodes_list)
+  count            = var.enabled ? length(var.redis_nodes_list) : 0
   length           = 32
   lower            = true
   upper            = true
@@ -10,7 +10,7 @@ resource "random_password" "redis_auth_token" {
 
 resource "aws_security_group" "redis-sg" {
   description = "Security Group - ${var.redis_nodes_list[count.index]}-${local.cluster_name_suffix}"
-  count       = length(var.redis_nodes_list)
+  count       = var.enabled ? length(var.redis_nodes_list) : 0
   name_prefix = "${var.redis_nodes_list[count.index]}-${local.cluster_name_suffix}-sg"
   vpc_id      = data.aws_vpc.stp-vpc-db.id
 
@@ -45,14 +45,14 @@ resource "aws_security_group" "redis-sg" {
 }
 
 resource "aws_elasticache_subnet_group" "redis-subnet-group" {
-  count      = length(var.redis_nodes_list)
+  count      = var.enabled ? length(var.redis_nodes_list) : 0
   name       = "${var.redis_nodes_list[count.index]}-${local.cluster_name_suffix}-subnetgroup"
   subnet_ids = length(var.vpc-db-private-subnets) != 0 ? var.vpc-db-private-subnets : data.aws_subnets.stp-vpc-db-private.ids
 }
 
 resource "aws_elasticache_replication_group" "redis-replica-group" {
   #checkov:skip=CKV_AWS_191:not use CMK
-  count                      = length(var.redis_nodes_list)
+  count                      = var.enabled ? length(var.redis_nodes_list) : 0
   replication_group_id       = "${var.redis_nodes_list[count.index]}-${local.cluster_name_suffix}"
   description                = "Splashtop - Redis Replication Group"
   engine                     = "redis"

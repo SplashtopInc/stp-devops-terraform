@@ -1,28 +1,33 @@
 # AWS privilege
-variable "profile" {
-  type    = string
-  default = ""
-}
 variable "assume_role" {
-  type    = string
-  default = ""
+  description = "the aws role to be assigned to"
+  type        = string
+  default     = ""
 }
 
 variable "region" {
-  type    = string
-  default = ""
+  description = "the aws region"
+  type        = string
+  default     = ""
 }
 
 variable "project" {
-  type    = string
-  default = ""
+  description = "the project name"
+  type        = string
+  default     = ""
 }
 
 variable "environment" {
-  type    = string
-  default = ""
+  description = "the environment ex: prod, qa, test"
+  type        = string
+  default     = ""
 }
 ## custom redis var
+variable "enabled" {
+  description = "Set to false to prevent the module from creating any resources"
+  type        = bool
+  default     = true
+}
 
 variable "vpc_db_vpc_id" {
   description = "vpc module outputs the ID under the name vpc_id"
