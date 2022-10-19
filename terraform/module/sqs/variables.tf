@@ -28,6 +28,12 @@ variable "aws_account_name" {
   default = "the aws account name"
 }
 
+variable "enabled" {
+  description = "Set to false to prevent the module from creating any resources"
+  type        = bool
+  default     = true
+}
+
 variable "shoryuken_sqs_list_dead" {
   description = "SQS queues list of dead for shoryuken"
   type        = list(string)
