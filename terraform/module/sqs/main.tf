@@ -2,7 +2,7 @@
 resource "aws_sqs_queue" "shoryuken_sqs_dead" {
   #ts:skip=AWS.SQS.NetworkSecurity.High.0570 skip
   # checkov:skip=CKV_AWS_27: DEAD QUEUE UNENCRYPTED IS KNOWN ISSUE
-  count                      = var.enabled ? length(var.shoryuken_sqs_list_dead) : 0
+  count                      = length(var.shoryuken_sqs_list_dead)
   name                       = "${local.sqs_prefix}${var.shoryuken_sqs_list_dead[count.index]}"
   visibility_timeout_seconds = 0
   message_retention_seconds  = 1209600
@@ -37,7 +37,6 @@ POLICY
 }
 
 resource "aws_sqs_queue" "shoryuken_sqs_high_60" {
-  count                             = var.enabled ? 1 : 0
   name                              = "${local.sqs_prefix}be-async-high-60"
   visibility_timeout_seconds        = 60
   message_retention_seconds         = 604800
@@ -78,7 +77,6 @@ POLICY
 }
 
 resource "aws_sqs_queue" "shoryuken_sqs_low_60" {
-  count                      = var.enabled ? 1 : 0
   name                       = "${local.sqs_prefix}be-async-low-60"
   visibility_timeout_seconds = 60
   message_retention_seconds  = 604800
@@ -121,7 +119,6 @@ POLICY
 
 
 resource "aws_sqs_queue" "shoryuken_sqs_low_300" {
-  count                      = var.enabled ? 1 : 0
   name                       = "${local.sqs_prefix}be-async-low-300"
   visibility_timeout_seconds = 300
   message_retention_seconds  = 604800
@@ -163,7 +160,6 @@ POLICY
 }
 
 resource "aws_sqs_queue" "shoryuken_sqs_delay_600" {
-  count                             = var.enabled ? 1 : 0
   name                              = "${local.sqs_prefix}be-async-delay-600"
   visibility_timeout_seconds        = 600
   message_retention_seconds         = 604800
@@ -207,7 +203,6 @@ POLICY
 resource "aws_sqs_queue" "src_command_queue_dead" {
   #ts:skip=AWS.SQS.NetworkSecurity.High.0570 skip
   # checkov:skip=CKV_AWS_27: DEAD QUEUE UNENCRYPTED IS KNOWN ISSUE
-  count                      = var.enabled ? 1 : 0
   name                       = "src-command-queue-dead"
   visibility_timeout_seconds = 0
   message_retention_seconds  = 86400
@@ -242,7 +237,6 @@ POLICY
 }
 
 resource "aws_sqs_queue" "src_command_queue" {
-  count                             = var.enabled ? 1 : 0
   name                              = "src-command-queue"
   visibility_timeout_seconds        = 60
   message_retention_seconds         = 21600
@@ -253,7 +247,7 @@ resource "aws_sqs_queue" "src_command_queue" {
   kms_data_key_reuse_period_seconds = 300
 
   redrive_policy = jsonencode({
-    deadLetterTargetArn = aws_sqs_queue.src_command_queue_dead[count.index].arn
+    deadLetterTargetArn = aws_sqs_queue.src_command_queue_dead.arn
     maxReceiveCount     = 2
   })
 
@@ -283,7 +277,6 @@ POLICY
 }
 
 resource "aws_sqs_queue" "webhook_sqs" {
-  count                             = var.enabled ? 1 : 0
   name                              = "webhook-sqs"
   visibility_timeout_seconds        = 60
   message_retention_seconds         = 1800

@@ -23,14 +23,9 @@ variable "environment" {
   default     = ""
 }
 
-variable "owner" {
-  type    = string
-  default = "user"
-}
-
 variable "aws_account_name" {
   type    = string
-  default = ""
+  default = "the aws account name"
 }
 
 variable "shoryuken_sqs_list_dead" {
@@ -45,12 +40,6 @@ variable "shoryuken_sqs_list_dead" {
 
 variable "sqs_managed_sse_enabled" {
   description = "Boolean to enable server-side encryption (SSE) of message content with SQS-owned encryption keys"
-  type        = bool
-  default     = true
-}
-
-variable "enabled" {
-  description = "Set to false to prevent the module from creating any resources"
   type        = bool
   default     = true
 }
