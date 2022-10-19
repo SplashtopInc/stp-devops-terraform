@@ -13,7 +13,7 @@ resource "random_password" "master" {
   length           = var.master_random_password_length
   lower            = true
   upper            = true
-  number           = true
+  numeric          = true
   special          = false
   override_special = "!&#$^<>-"
 }
