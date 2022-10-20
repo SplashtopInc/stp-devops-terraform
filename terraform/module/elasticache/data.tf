@@ -4,16 +4,13 @@ data "aws_vpc" "stp-vpc-db" {
   }
 }
 
-data "aws_subnets" "stp-vpc-db-private" {
+data "aws_subnets" "stp-vpc-db-all" {
   filter {
     name   = "vpc-id"
     values = [data.aws_vpc.stp-vpc-db.id]
   }
-
   filter {
-    name = "tag:Name"
-    values = [
-      "stp-vpc-db-private-${var.region}*"
-    ]
+    name   = "tag:Name"
+    values = ["stp-vpc-db-private-${var.region}*"]
   }
 }
