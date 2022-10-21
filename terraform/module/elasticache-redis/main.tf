@@ -1,10 +1,3 @@
-resource "random_string" "suffix" {
-  count   = var.enabled ? 1 : 0
-  length  = 8
-  upper   = false # no upper for RDS related resources naming rule
-  special = false
-}
-
 resource "random_password" "redis_auth_token" {
   count            = var.enabled ? length(var.redis_nodes_list) : 0
   length           = 32
