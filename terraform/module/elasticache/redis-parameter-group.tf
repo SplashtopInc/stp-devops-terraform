@@ -1,5 +1,5 @@
 resource "aws_elasticache_parameter_group" "redis-para-group" {
-  count       = length(var.redis_nodes_list)
+  count       = var.enabled ? length(var.redis_nodes_list) : 0
   description = "Splashtop parameters"
   family      = var.redis_parameter_group_family
   name        = join("-", [var.redis_nodes_list[count.index], local.cluster_name_suffix, replace(var.redis_parameter_group_family, ".", "")])

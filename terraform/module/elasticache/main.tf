@@ -47,7 +47,7 @@ resource "aws_security_group" "redis-sg" {
 resource "aws_elasticache_subnet_group" "redis-subnet-group" {
   count      = var.enabled ? length(var.redis_nodes_list) : 0
   name       = "${var.redis_nodes_list[count.index]}-${local.cluster_name_suffix}-subnetgroup"
-  subnet_ids = length(var.vpc-db-private-subnets) != 0 ? var.vpc-db-private-subnets : data.aws_subnets.stp-vpc-db-all.ids
+  subnet_ids = length(var.vpc-db-private-subnets) != 0 ? var.vpc-db-private-subnets : data.aws_subnets.stp-vpc-db-private.ids
 }
 
 resource "aws_elasticache_replication_group" "redis-replica-group" {
