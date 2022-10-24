@@ -1,21 +1,22 @@
 resource "random_password" "be_elasticsearch_master_user_password" {
-  count            = var.be_elasticsearch_is_production ? 1 : 0
+  count            = (var.enabled && var.be_elasticsearch_is_production) ? 1 : 0
   length           = 32
   lower            = true
   upper            = true
-  number           = true
+  numeric          = true
   special          = true
   override_special = "!&#$^<>-"
 }
 
 # https://github.com/cloudposse/terraform-aws-elasticsearch/issues/5#issuecomment-737279024
 resource "aws_iam_service_linked_role" "elasticsearch_service_linked_role" {
-  count            = var.be_elasticsearch_create_role ? 1 : 0
+  count            = (var.enabled && var.be_elasticsearch_create_role) ? 1 : 0
   aws_service_name = "es.amazonaws.com"
 }
 
 resource "aws_elasticsearch_domain_policy" "be_elasticsearch_domain_policy" {
-  domain_name = aws_elasticsearch_domain.be_elasticsearch_domain.domain_name
+  count       = var.enabled ? 1 : 0
+  domain_name = aws_elasticsearch_domain.be_elasticsearch_domain[0].domain_name
 
   access_policies = jsonencode(
     {
@@ -47,12 +48,13 @@ resource "aws_elasticsearch_domain" "be_elasticsearch_domain" {
   #ts:skip=AWS.ElasticSearch.EKM.Medium.0768 skip
   #ts:skip=AWS.Elasticsearch.Logging.Medium.0573 skip
   #ts:skip=AC_AWS_0322 skip
+  count                 = var.enabled ? 1 : 0
   domain_name           = local.elasticache_cluster_domain
   elasticsearch_version = var.be_elasticsearch_version
 
   vpc_options {
     subnet_ids         = var.be_elasticsearch_multiaz ? data.aws_subnets.stp_vpc_db_private.ids : toset([tolist(data.aws_subnets.stp_vpc_db_private.ids)[0]])
-    security_group_ids = [aws_security_group.elasticsearch_sg.id]
+    security_group_ids = [aws_security_group.elasticsearch_sg[0].id]
   }
 
   advanced_security_options {
@@ -99,22 +101,22 @@ resource "aws_elasticsearch_domain" "be_elasticsearch_domain" {
 
   log_publishing_options {
     enabled                  = true
-    cloudwatch_log_group_arn = aws_cloudwatch_log_group.elasticsearch_log_group_search_logs.arn
+    cloudwatch_log_group_arn = aws_cloudwatch_log_group.elasticsearch_log_group_search_logs[0].arn
     log_type                 = "SEARCH_SLOW_LOGS"
   }
   log_publishing_options {
     enabled                  = true
-    cloudwatch_log_group_arn = aws_cloudwatch_log_group.elasticsearch_log_group_index_logs.arn
+    cloudwatch_log_group_arn = aws_cloudwatch_log_group.elasticsearch_log_group_index_logs[0].arn
     log_type                 = "INDEX_SLOW_LOGS"
   }
   log_publishing_options {
     enabled                  = true
-    cloudwatch_log_group_arn = aws_cloudwatch_log_group.elasticsearch_log_group_application_logs.arn
+    cloudwatch_log_group_arn = aws_cloudwatch_log_group.elasticsearch_log_group_application_logs[0].arn
     log_type                 = "ES_APPLICATION_LOGS"
   }
   log_publishing_options {
     enabled                  = true
-    cloudwatch_log_group_arn = aws_cloudwatch_log_group.elasticsearch_log_group_audit_logs.arn
+    cloudwatch_log_group_arn = aws_cloudwatch_log_group.elasticsearch_log_group_audit_logs[0].arn
     log_type                 = "AUDIT_LOGS"
   }
 

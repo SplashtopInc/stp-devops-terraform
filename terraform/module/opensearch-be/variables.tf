@@ -1,4 +1,8 @@
-
+variable "enabled" {
+  description = "Whether cluster should be created (affects nearly all resources)"
+  type        = bool
+  default     = true
+}
 
 ### ElasticSearch ###
 variable "be_elasticsearch_is_production" {
