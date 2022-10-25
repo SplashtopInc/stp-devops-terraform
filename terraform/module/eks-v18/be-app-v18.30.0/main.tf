@@ -54,6 +54,7 @@ module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "18.30.0"
 
+  create                          = var.create
   cluster_name                    = local.name
   cluster_version                 = local.cluster_version
   cluster_endpoint_private_access = true
@@ -75,7 +76,7 @@ module "eks" {
   }
 
   cluster_encryption_config = [{
-    provider_key_arn = aws_kms_key.eks.arn
+    provider_key_arn = aws_kms_key.eks[0].arn
     resources        = ["secrets"]
   }]
 
@@ -184,7 +185,7 @@ module "eks" {
             iops                  = 3000
             throughput            = 150
             encrypted             = true
-            kms_key_id            = aws_kms_key.ebs.arn
+            kms_key_id            = aws_kms_key.ebs[0].arn
             delete_on_termination = true
           }
         }
@@ -265,7 +266,7 @@ module "eks" {
             iops                  = 3000
             throughput            = 150
             encrypted             = true
-            kms_key_id            = aws_kms_key.ebs.arn
+            kms_key_id            = aws_kms_key.ebs[0].arn
             delete_on_termination = true
           }
         }
@@ -346,7 +347,7 @@ module "eks" {
             iops                  = 3000
             throughput            = 150
             encrypted             = true
-            kms_key_id            = aws_kms_key.ebs.arn
+            kms_key_id            = aws_kms_key.ebs[0].arn
             delete_on_termination = true
           }
         }
@@ -488,6 +489,7 @@ resource "null_resource" "apply" {
 resource "aws_kms_key" "eks" {
   #checkov:skip=CKV_AWS_7:sikp
   #ts:skip=AC_AWS_0160 skip key rotate
+  count                   = var.create ? 1 : 0
   description             = "EKS Secret Encryption Key"
   deletion_window_in_days = 7
   enable_key_rotation     = false
@@ -499,6 +501,7 @@ resource "aws_kms_key" "eks" {
 resource "aws_kms_key" "ebs" {
   #checkov:skip=CKV_AWS_7:sikp
   #ts:skip=AC_AWS_0160 skip key rotate
+  count                   = var.create ? 1 : 0
   description             = "Customer managed key to encrypt self managed node group volumes"
   deletion_window_in_days = 7
   policy                  = data.aws_iam_policy_document.ebs.json
@@ -574,6 +577,7 @@ resource "aws_secretsmanager_secret" "this" {
   #checkov:skip=CKV_AWS_149: not use KMS key
   #ts:skip=AWS.AKK.DP.HIGH.0012 skip
   #ts:skip=AWS.SecretsManagerSecret.DP.MEDIUM.0036 skip
+  count                   = var.create ? 1 : 0
   name                    = local.secretsmanager_name
   description             = local.secretsmanager_description
   recovery_window_in_days = 7

@@ -276,6 +276,7 @@ data "aws_iam_policy_document" "alb_ingress" {
   }
 }
 resource "aws_iam_policy" "alb_ingress" {
+  count  = var.create ? 1 : 0
   name   = "${local.name}-ALB_Controller_IAMPolicy"
   path   = "/"
   policy = data.aws_iam_policy_document.alb_ingress.json
@@ -303,6 +304,7 @@ data "aws_iam_policy_document" "ecr_access" {
   }
 }
 resource "aws_iam_policy" "ecr_access" {
+  count  = var.create ? 1 : 0
   name   = "${local.name}-ecr_access"
   path   = "/"
   policy = data.aws_iam_policy_document.ecr_access.json
@@ -411,6 +413,7 @@ data "aws_iam_policy_document" "allow_firehose_sqs_s3_sns_r53_autoscaling" {
   }
 }
 resource "aws_iam_policy" "allow_firehose_sqs_s3_sns_r53_autoscaling" {
+  count  = var.create ? 1 : 0
   name   = "${local.name}-allow_firehose_sqs_s3_sns_r53_autoscaling"
   path   = "/"
   policy = data.aws_iam_policy_document.allow_firehose_sqs_s3_sns_r53_autoscaling.json
@@ -462,6 +465,7 @@ data "aws_iam_policy_document" "elasticfilesystem_access" {
   }
 }
 resource "aws_iam_policy" "elasticfilesystem_access" {
+  count  = var.create ? 1 : 0
   name   = "${local.name}-elasticfilesystem_access"
   path   = "/"
   policy = data.aws_iam_policy_document.elasticfilesystem_access.json
@@ -472,28 +476,28 @@ resource "aws_iam_policy" "elasticfilesystem_access" {
 resource "aws_iam_role_policy_attachment" "alb_ingress" {
   for_each   = module.eks.self_managed_node_groups
   role       = lookup(each.value, "iam_role_name", "")
-  policy_arn = aws_iam_policy.alb_ingress.arn
+  policy_arn = aws_iam_policy.alb_ingress[0].arn
   depends_on = [module.eks]
 }
 
 resource "aws_iam_role_policy_attachment" "ecr_access" {
   for_each   = module.eks.self_managed_node_groups
   role       = lookup(each.value, "iam_role_name", "")
-  policy_arn = aws_iam_policy.ecr_access.arn
+  policy_arn = aws_iam_policy.ecr_access[0].arn
   depends_on = [module.eks]
 }
 
 resource "aws_iam_role_policy_attachment" "allow_firehose_sqs_s3_sns_r53_autoscaling" {
   for_each   = module.eks.self_managed_node_groups
   role       = lookup(each.value, "iam_role_name", "")
-  policy_arn = aws_iam_policy.allow_firehose_sqs_s3_sns_r53_autoscaling.arn
+  policy_arn = aws_iam_policy.allow_firehose_sqs_s3_sns_r53_autoscaling[0].arn
   depends_on = [module.eks]
 }
 
 resource "aws_iam_role_policy_attachment" "elasticfilesystem_access" {
   for_each   = module.eks.self_managed_node_groups
   role       = lookup(each.value, "iam_role_name", "")
-  policy_arn = aws_iam_policy.elasticfilesystem_access.arn
+  policy_arn = aws_iam_policy.elasticfilesystem_access[0].arn
   depends_on = [module.eks]
 }
 
@@ -533,6 +537,7 @@ data "aws_iam_policy_document" "load-balancer-role-trust-policy" {
 ## Create an IAM role and attachment load-balancer-role-trust-policy.json
 
 resource "aws_iam_role" "aws-lb-controller-role" {
+  count              = var.create ? 1 : 0
   name               = "${local.name}-aws-lb-controller-role"
   assume_role_policy = data.aws_iam_policy_document.load-balancer-role-trust-policy.json
   depends_on         = [module.eks]
@@ -541,7 +546,8 @@ resource "aws_iam_role" "aws-lb-controller-role" {
 # ## attachment IAM policy for the AWS Load Balancer Controller
 
 resource "aws_iam_role_policy_attachment" "aws-lb-controller-attachment" {
-  role       = aws_iam_role.aws-lb-controller-role.name
-  policy_arn = aws_iam_policy.alb_ingress.arn
+  count      = var.create ? 1 : 0
+  role       = aws_iam_role.aws-lb-controller-role[0].name
+  policy_arn = aws_iam_policy.alb_ingress[0].arn
   depends_on = [module.eks]
 }
