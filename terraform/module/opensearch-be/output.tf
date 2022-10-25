@@ -17,7 +17,7 @@ output "Premium_Inventory_Lambda_Execution_Role_ARN" {
 output "OpenSearch_Infra" {
   value = {
     "01_Domain"        = var.enabled ? "https://${aws_elasticsearch_domain.be_elasticsearch_domain[0].endpoint}:443" : ""
-    "02_SecurityGroup" = var.enabled ? "${aws_elasticsearch_domain.be_elasticsearch_domain[0].vpc_options[*].security_group_ids}" : ""
+    "02_SecurityGroup" = var.enabled ? "${aws_elasticsearch_domain.be_elasticsearch_domain[0].vpc_options[*].security_group_ids}" : []
   }
 }
 
