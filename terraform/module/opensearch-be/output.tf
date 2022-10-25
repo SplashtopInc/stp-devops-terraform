@@ -1,23 +1,23 @@
 ### Output ###
 output "OpenSearch_Log_Group_Name" {
   value = {
-    "01_Search_Slow_Logs" = aws_cloudwatch_log_group.elasticsearch_log_group_search_logs[0].name
-    "02_Index_Slow_Logs"  = aws_cloudwatch_log_group.elasticsearch_log_group_index_logs[0].name
-    "03_Error_Logs"       = aws_cloudwatch_log_group.elasticsearch_log_group_application_logs[0].name
-    "04_Audit_Logs"       = aws_cloudwatch_log_group.elasticsearch_log_group_audit_logs[0].name
+    "01_Search_Slow_Logs" = var.enabled ? aws_cloudwatch_log_group.elasticsearch_log_group_search_logs[0].name : ""
+    "02_Index_Slow_Logs"  = var.enabled ? aws_cloudwatch_log_group.elasticsearch_log_group_index_logs[0].name : ""
+    "03_Error_Logs"       = var.enabled ? aws_cloudwatch_log_group.elasticsearch_log_group_application_logs[0].name : ""
+    "04_Audit_Logs"       = var.enabled ? aws_cloudwatch_log_group.elasticsearch_log_group_audit_logs[0].name : ""
   }
 }
 
 ### Output ###
 output "Premium_Inventory_Lambda_Execution_Role_ARN" {
-  value = aws_iam_role.premium_inventory_lambda_execution_role[0].arn
+  value = var.enabled ? aws_iam_role.premium_inventory_lambda_execution_role[0].arn : ""
 }
 
 ### Output ###
 output "OpenSearch_Infra" {
   value = {
-    "01_Domain"        = "https://${aws_elasticsearch_domain.be_elasticsearch_domain[0].endpoint}:443"
-    "02_SecurityGroup" = "${aws_elasticsearch_domain.be_elasticsearch_domain[0].vpc_options[*].security_group_ids}"
+    "01_Domain"        = var.enabled ? "https://${aws_elasticsearch_domain.be_elasticsearch_domain[0].endpoint}:443" : ""
+    "02_SecurityGroup" = var.enabled ? "${aws_elasticsearch_domain.be_elasticsearch_domain[0].vpc_options[*].security_group_ids}" : ""
   }
 }
 
@@ -32,14 +32,14 @@ output "OpenSearch_Master_User_Info" {
 ### Output ###
 output "Severless_Framework_Deployment_Request_Resources" {
   value = {
-    "01_Lambda_Premium_Inventory_SG_ID"   = aws_security_group.lambda_premium_inventory_sg[0].id
-    "02_Private_Subnet_IDs_of_VPC_Public" = data.aws_subnets.stp-vpc-pub-private.ids
+    "01_Lambda_Premium_Inventory_SG_ID"   = var.enabled ? aws_security_group.lambda_premium_inventory_sg[0].id : ""
+    "02_Private_Subnet_IDs_of_VPC_Public" = var.enabled ? data.aws_subnets.stp-vpc-pub-private.ids : ""
   }
 }
 
 
 output "opensearch_endpoint" {
-  value = "https://${aws_elasticsearch_domain.be_elasticsearch_domain[0].endpoint}:443"
+  value = var.enabled ? "https://${aws_elasticsearch_domain.be_elasticsearch_domain[0].endpoint}:443" : 0
 }
 
 output "nonprod_password" {
