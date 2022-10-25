@@ -210,18 +210,26 @@ variable "putin_khuylo" {
 
 ################################################################
 ### Site information ###
+variable "assume_role" {
+  description = "the aws role to be assigned to"
+  type        = string
+  default     = ""
+}
+
 variable "region" {
-  description = "region for the resource"
+  description = "the aws region"
   type        = string
   default     = ""
 }
-variable "environment" {
-  description = "environment for the resource"
-  type        = string
-  default     = ""
-}
+
 variable "project" {
-  description = "project name of the resource"
+  description = "the project name"
+  type        = string
+  default     = ""
+}
+
+variable "environment" {
+  description = "the environment ex: prod, qa, test"
   type        = string
   default     = ""
 }

@@ -2,8 +2,9 @@ module "s3_bucket" {
   source  = "terraform-aws-modules/s3-bucket/aws"
   version = "3.4.0"
 
-  bucket = var.bucket
-  acl    = "log-delivery-write"
+  create_bucket = var.create_bucket
+  bucket        = var.bucket
+  acl           = "log-delivery-write"
 
   # Allow deletion of non-empty bucket
   force_destroy = true
