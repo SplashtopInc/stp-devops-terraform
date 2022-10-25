@@ -33,7 +33,7 @@ output "OpenSearch_Master_User_Info" {
 output "Severless_Framework_Deployment_Request_Resources" {
   value = {
     "01_Lambda_Premium_Inventory_SG_ID"   = var.enabled ? aws_security_group.lambda_premium_inventory_sg[0].id : ""
-    "02_Private_Subnet_IDs_of_VPC_Public" = var.enabled ? data.aws_subnets.stp-vpc-pub-private.ids : ""
+    "02_Private_Subnet_IDs_of_VPC_Public" = var.enabled ? data.aws_subnets.stp-vpc-pub-private.ids : []
   }
 }
 
