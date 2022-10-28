@@ -105,13 +105,13 @@ variable "private_subnets" {
 variable "alb_ingress_cidr_blocks" {
   description = "List of IPv4 CIDR ranges to use on all ingress rules of the ALB."
   type        = list(string)
-  default     = ["0.0.0.0/0"]
+  default     = []
 }
 
 variable "alb_ingress_ipv6_cidr_blocks" {
   description = "List of IPv6 CIDR ranges to use on all ingress rules of the ALB."
   type        = list(string)
-  default     = ["::/0"]
+  default     = []
 }
 
 variable "alb_log_bucket_name" {
