@@ -141,6 +141,11 @@ output "alb_https_listeners_arn" {
   value = module.atlantis.alb_https_listeners_arn
 }
 
+output "vpc_nat_public_ips" {
+  description = "List of public Elastic IPs created for AWS NAT Gateway"
+  value       = module.atlantis.vpc_nat_public_ips
+}
+
 # Webhooks
 output "github_webhook_urls" {
   description = "Github webhook URL"
