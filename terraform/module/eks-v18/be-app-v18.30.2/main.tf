@@ -1,9 +1,16 @@
+resource "random_string" "suffix" {
+  count   = var.create ? 1 : 0
+  length  = 8
+  upper   = false # no upper for RDS related resources naming rule
+  special = false
+}
+
 locals {
   # substr(string, offset, length)
   cluster_name_project = lower(var.project)
   cluster_name_region  = join("", [substr(replace(var.region, "-", ""), 0, 3), regex("\\d$", var.region)])
   cluster_name_env     = substr(var.environment, 0, 4)
-  cluster_name_suffix  = "${local.cluster_name_env}-${local.cluster_name_region}-${random_string.suffix.result}"
+  cluster_name_suffix  = var.create ? "${local.cluster_name_env}-${local.cluster_name_region}-${random_string.suffix[0].result}" : ""
 
   app_short_name   = replace(var.app_service, "-", "")
   app_cluster_name = "${var.project}-${local.app_short_name}-${local.cluster_name_suffix}"
@@ -76,7 +83,7 @@ module "eks" {
   }
 
   cluster_encryption_config = [{
-    provider_key_arn = aws_kms_key.eks[0].arn
+    provider_key_arn = var.create ? aws_kms_key.eks[0].arn : null
     resources        = ["secrets"]
   }]
 
@@ -185,7 +192,7 @@ module "eks" {
             iops                  = 3000
             throughput            = 150
             encrypted             = true
-            kms_key_id            = aws_kms_key.ebs[0].arn
+            kms_key_id            = var.create ? aws_kms_key.ebs[0].arn : null
             delete_on_termination = true
           }
         }
@@ -266,7 +273,7 @@ module "eks" {
             iops                  = 3000
             throughput            = 150
             encrypted             = true
-            kms_key_id            = aws_kms_key.ebs[0].arn
+            kms_key_id            = var.create ? aws_kms_key.ebs[0].arn : null
             delete_on_termination = true
           }
         }
@@ -347,7 +354,7 @@ module "eks" {
             iops                  = 3000
             throughput            = 150
             encrypted             = true
-            kms_key_id            = aws_kms_key.ebs[0].arn
+            kms_key_id            = var.create ? aws_kms_key.ebs[0].arn : null
             delete_on_termination = true
           }
         }
@@ -404,15 +411,17 @@ module "eks" {
 ################################################################################
 
 data "aws_eks_cluster_auth" "this" {
-  name = module.eks.cluster_id
+  count = var.create ? 1 : 0
+  name  = module.eks.cluster_id
 }
 
 data "aws_eks_cluster" "this" {
-  name = module.eks.cluster_id
+  count = var.create ? 1 : 0
+  name  = module.eks.cluster_id
 }
 
 locals {
-  kubeconfig = yamlencode({
+  kubeconfig = var.create ? yamlencode({
     apiVersion      = "v1"
     kind            = "Config"
     current-context = "terraform"
@@ -433,18 +442,18 @@ locals {
     users = [{
       name = "terraform"
       user = {
-        token = data.aws_eks_cluster_auth.this.token
+        token = data.aws_eks_cluster_auth.this[0].token
       }
     }]
-  })
+  }) : "{}"
 
-  template_vars = {
+  template_vars = var.create ? {
     cluster_name     = module.eks.cluster_id
     cluster_endpoint = module.eks.cluster_endpoint
-    cluster_ca       = data.aws_eks_cluster.this.certificate_authority[0].data
+    cluster_ca       = data.aws_eks_cluster.this[0].certificate_authority[0].data
     cluster_profile  = var.profile
     cluster_region   = var.region
-  }
+  } : {}
 
   // kubeconfig = templatefile("./kubeconfig.tpl", local.template_vars)
 
@@ -452,8 +461,8 @@ locals {
   map_users = var.map_users
 
   # we have to combine the configmap created by the eks module with the externally created node group/profile sub-modules
-  current_auth_configmap = yamldecode(module.eks.aws_auth_configmap_yaml)
-  updated_auth_configmap_data = {
+  current_auth_configmap = module.eks.aws_auth_configmap_yaml != null ? yamldecode(module.eks.aws_auth_configmap_yaml) : yamldecode("")
+  updated_auth_configmap_data = var.create ? {
     data = {
       mapRoles = yamlencode(
         distinct(concat(
@@ -461,10 +470,12 @@ locals {
       ))
       mapUsers = yamlencode(local.map_users)
     }
+    } : {
   }
 }
 
 resource "null_resource" "apply" {
+  count = var.create ? 1 : 0
   triggers = {
     kubeconfig = base64encode(local.kubeconfig)
     cmd_patch  = <<-EOT
@@ -569,7 +580,7 @@ data "aws_iam_policy_document" "ebs" {
 ################################################################################
 
 locals {
-  secretsmanager_name        = "${var.environment}/data/${var.aws_account_name}/${local.app_cluster_name}/${local.api_name}"
+  secretsmanager_name        = var.create ? "${var.environment}/data/${var.aws_account_name}/${local.app_cluster_name}/${local.api_name}" : ""
   secretsmanager_description = "Vault secrets for ${local.app_cluster_name}"
 }
 #tfsec:ignore:aws-ssm-secret-use-customer-key
