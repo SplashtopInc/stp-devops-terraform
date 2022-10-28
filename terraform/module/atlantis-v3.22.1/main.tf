@@ -38,6 +38,9 @@ module "atlantis" {
   # EFS
   enable_ephemeral_storage = var.enable_ephemeral_storage
 
+  # user
+  user = var.user
+
   # ECS
   ecs_service_platform_version = "LATEST"
   ecs_container_insights       = true
