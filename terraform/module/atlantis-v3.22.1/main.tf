@@ -6,10 +6,6 @@ locals {
     Owner       = var.project
     Environment = var.environment
   }
-  repos = flatten([
-    for repo in var.allowed_repo_names :
-    ["github.com/${var.github_owner}/${repo}"]
-  ])
 }
 
 ################################################################################
@@ -83,15 +79,17 @@ module "atlantis" {
   # Trusted roles
   trusted_principals = ["ssm.amazonaws.com"]
 
+  # IAM role options
+  permissions_boundary = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/cloud/developer-boundary-policy"
+  path                 = "/delegatedadmin/developer/"
+
   # Atlantis
   atlantis_github_user       = var.atlantis_github_user
   atlantis_github_user_token = var.atlantis_github_user_token
-  // atlantis_repo_allowlist    = ["github.com/${var.github_owner}/*"]
-  atlantis_repo_allowlist = local.repos
+  atlantis_repo_allowlist    = [for repo in var.github_repo_names : "github.com/${var.github_owner}/${repo}"]
 
   # ALB access
   alb_ingress_cidr_blocks         = var.alb_ingress_cidr_blocks
-  alb_ingress_ipv6_cidr_blocks    = var.alb_ingress_ipv6_cidr_blocks
   alb_logging_enabled             = true
   alb_log_bucket_name             = module.atlantis_access_log_bucket.s3_bucket_id
   alb_log_location_prefix         = "atlantis-alb"
@@ -101,6 +99,29 @@ module "atlantis" {
   allow_unauthenticated_access = true
   allow_github_webhooks        = true
   allow_repo_config            = true
+
+  # Extra container definitions
+  extra_container_definitions = [
+    {
+      name      = "log-router"
+      image     = "amazon/aws-for-fluent-bit:latest"
+      essential = true
+
+      firelens_configuration = {
+        type = "fluentbit"
+
+        logConfiguration = {
+          logDriver = "awslogs",
+          options = {
+            awslogs-group         = "firelens-container",
+            awslogs-region        = local.region,
+            awslogs-create-group  = true,
+            awslogs-stream-prefix = "firelens"
+          }
+        }
+      }
+    }
+  ]
 
   tags = local.tags
 
@@ -116,8 +137,7 @@ module "github_repository_webhook" {
   github_owner = var.github_owner
   github_token = var.atlantis_github_user_token
 
-  // atlantis_repo_allowlist = module.atlantis.atlantis_repo_allowlist
-  atlantis_repo_allowlist = var.allowed_repo_names
+  atlantis_repo_allowlist = var.github_repo_names
 
   webhook_url    = module.atlantis.atlantis_url_events
   webhook_secret = module.atlantis.webhook_secret

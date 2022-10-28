@@ -787,8 +787,8 @@ variable "github_owner" {
   type        = string
 }
 
-variable "allowed_repo_names" {
-  description = "repo name"
+variable "github_repo_names" {
+  description = "List of Github repositories that should be monitored by Atlantis"
   type        = list(string)
   default     = []
 }
