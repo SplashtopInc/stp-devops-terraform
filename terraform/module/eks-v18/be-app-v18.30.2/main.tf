@@ -13,7 +13,7 @@ locals {
   cluster_name_suffix  = var.create ? "${local.cluster_name_env}-${local.cluster_name_region}-${random_string.suffix[0].result}" : ""
 
   app_short_name   = replace(var.app_service, "-", "")
-  app_cluster_name = "${var.project}-${local.app_short_name}-${local.cluster_name_suffix}"
+  app_cluster_name = "${local.cluster_name_project}-${local.app_short_name}-${local.cluster_name_suffix}"
 
   name            = local.app_cluster_name
   cluster_version = var.cluster_version
