@@ -31,8 +31,8 @@ locals {
   worker_ami_owner_id = var.hardened_worker_ami_owner_id
   worker_ami_linux    = var.hardened_worker_ami_linux
 
-  vpc_id     = (var.vpc_id != null ? var.vpc_id : data.aws_vpc.stp-vpc-pub.id)
-  subnet_ids = (var.subnet_ids != [] ? var.subnet_ids : data.aws_subnets.stp-vpc-pub-private.ids)
+  vpc_id     = var.vpc_id == null ? data.aws_vpc.stp-vpc-pub.id : var.vpc_id
+  subnet_ids = length(var.subnet_ids) == 0 ? data.aws_subnets.stp-vpc-pub-private.ids : var.subnet_ids
 }
 
 # app
