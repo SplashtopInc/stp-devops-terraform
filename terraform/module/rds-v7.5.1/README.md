@@ -3,16 +3,16 @@
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 4.30 |
-| <a name="requirement_random"></a> [random](#requirement\_random) | >= 2.2 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.1.0 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 4.30.0 |
+| <a name="requirement_random"></a> [random](#requirement\_random) | 3.4.3 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 4.30 |
-| <a name="provider_random"></a> [random](#provider\_random) | >= 2.2 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.37.0 |
+| <a name="provider_random"></a> [random](#provider\_random) | 3.4.3 |
 
 ## Modules
 
@@ -25,8 +25,10 @@
 
 | Name | Type |
 |------|------|
-| [random_password.master](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
-| [random_string.suffix](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string) | resource |
+| [aws_secretsmanager_secret.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/secretsmanager_secret) | resource |
+| [aws_secretsmanager_secret_version.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/secretsmanager_secret_version) | resource |
+| [random_password.master](https://registry.terraform.io/providers/hashicorp/random/3.4.3/docs/resources/password) | resource |
+| [random_string.suffix](https://registry.terraform.io/providers/hashicorp/random/3.4.3/docs/resources/string) | resource |
 | [aws_subnets.stp-vpc-db-all](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/subnets) | data source |
 | [aws_vpc.stp-vpc-db](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/vpc) | data source |
 
