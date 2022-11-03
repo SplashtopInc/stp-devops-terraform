@@ -1,14 +1,18 @@
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
-No requirements.
+| Name | Version |
+|------|---------|
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.1.0 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 4.30.0 |
+| <a name="requirement_random"></a> [random](#requirement\_random) | 3.4.3 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
-| <a name="provider_random"></a> [random](#provider\_random) | n/a |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.36.1 |
+| <a name="provider_random"></a> [random](#provider\_random) | 3.4.3 |
 
 ## Modules
 
@@ -30,10 +34,12 @@ No modules.
 | [aws_iam_role_policy_attachment.attach_lambda_execution_to_premium_inventory_lambda_role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_iam_role_policy_attachment.attach_s3_policy_to_premium_inventory_lambda_role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_iam_service_linked_role.elasticsearch_service_linked_role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_service_linked_role) | resource |
+| [aws_secretsmanager_secret.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/secretsmanager_secret) | resource |
+| [aws_secretsmanager_secret_version.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/secretsmanager_secret_version) | resource |
 | [aws_security_group.elasticsearch_sg](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group) | resource |
 | [aws_security_group.lambda_premium_inventory_sg](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group) | resource |
-| [random_password.be_elasticsearch_master_user_password](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
-| [random_string.suffix](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string) | resource |
+| [random_password.be_elasticsearch_master_user_password](https://registry.terraform.io/providers/hashicorp/random/3.4.3/docs/resources/password) | resource |
+| [random_string.suffix](https://registry.terraform.io/providers/hashicorp/random/3.4.3/docs/resources/string) | resource |
 | [aws_availability_zones.available](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/availability_zones) | data source |
 | [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
 | [aws_route53_zone.deploy_zone](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/route53_zone) | data source |
@@ -64,6 +70,7 @@ No modules.
 | <a name="input_be_elasticsearch_version"></a> [be\_elasticsearch\_version](#input\_be\_elasticsearch\_version) | OpenSearch version | `string` | `"OpenSearch_1.1"` | no |
 | <a name="input_be_elasticsearch_volume_size"></a> [be\_elasticsearch\_volume\_size](#input\_be\_elasticsearch\_volume\_size) | Volume size of OpenSearch cluster in GB | `number` | `10` | no |
 | <a name="input_domain"></a> [domain](#input\_domain) | n/a | `string` | `"splashtop.eu"` | no |
+| <a name="input_enabled"></a> [enabled](#input\_enabled) | Whether cluster should be created (affects nearly all resources) | `bool` | `true` | no |
 | <a name="input_environment"></a> [environment](#input\_environment) | n/a | `string` | `""` | no |
 | <a name="input_profile"></a> [profile](#input\_profile) | ## System ### AWS privilege | `string` | `""` | no |
 | <a name="input_project"></a> [project](#input\_project) | n/a | `string` | `""` | no |
@@ -79,4 +86,6 @@ No modules.
 | <a name="output_OpenSearch_Master_User_Info"></a> [OpenSearch\_Master\_User\_Info](#output\_OpenSearch\_Master\_User\_Info) | n/a |
 | <a name="output_Premium_Inventory_Lambda_Execution_Role_ARN"></a> [Premium\_Inventory\_Lambda\_Execution\_Role\_ARN](#output\_Premium\_Inventory\_Lambda\_Execution\_Role\_ARN) | ## Output ### |
 | <a name="output_Severless_Framework_Deployment_Request_Resources"></a> [Severless\_Framework\_Deployment\_Request\_Resources](#output\_Severless\_Framework\_Deployment\_Request\_Resources) | ## Output ### |
+| <a name="output_nonprod_password"></a> [nonprod\_password](#output\_nonprod\_password) | n/a |
+| <a name="output_opensearch_endpoint"></a> [opensearch\_endpoint](#output\_opensearch\_endpoint) | n/a |
 <!-- END_TF_DOCS -->

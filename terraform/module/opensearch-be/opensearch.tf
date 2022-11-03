@@ -28,7 +28,7 @@ resource "aws_elasticsearch_domain_policy" "be_elasticsearch_domain_policy" {
             "AWS" : "*"
           },
           "Action" : "es:ESHttp*",
-          "Resource" : "arn:aws:es:${var.region}:${data.aws_caller_identity.current.account_id}:domain/${local.elasticache_cluster_domain}/*"
+          "Resource" : "arn:aws:es:${var.region}:${data.aws_caller_identity.current.account_id}:domain/${local.elasticsearch_cluster_domain}/*"
         },
         {
           "Effect" : "Deny",
@@ -36,7 +36,7 @@ resource "aws_elasticsearch_domain_policy" "be_elasticsearch_domain_policy" {
             "AWS" : "*"
           },
           "Action" : "es:ESHttp*",
-          "Resource" : "arn:aws:es:${var.region}:${data.aws_caller_identity.current.account_id}:domain/${local.elasticache_cluster_domain}/_dashboards*"
+          "Resource" : "arn:aws:es:${var.region}:${data.aws_caller_identity.current.account_id}:domain/${local.elasticsearch_cluster_domain}/_dashboards*"
         }
       ]
     }
@@ -49,7 +49,7 @@ resource "aws_elasticsearch_domain" "be_elasticsearch_domain" {
   #ts:skip=AWS.Elasticsearch.Logging.Medium.0573 skip
   #ts:skip=AC_AWS_0322 skip
   count                 = var.enabled ? 1 : 0
-  domain_name           = local.elasticache_cluster_domain
+  domain_name           = local.elasticsearch_cluster_domain
   elasticsearch_version = var.be_elasticsearch_version
 
   vpc_options {
@@ -121,7 +121,7 @@ resource "aws_elasticsearch_domain" "be_elasticsearch_domain" {
   }
 
   tags = {
-    Domain = local.elasticache_cluster_domain
+    Domain = local.elasticsearch_cluster_domain
   }
 
   depends_on = [
@@ -138,8 +138,8 @@ resource "aws_elasticsearch_domain" "be_elasticsearch_domain" {
 ################################################################################
 
 locals {
-  secretsmanager_name        = var.enabled ? "${var.environment}/data/opensearch/${local.elasticache_cluster_domain}" : ""
-  secretsmanager_description = "Vault secrets for ${local.elasticache_cluster_domain} elasticache"
+  secretsmanager_name        = var.enabled ? "${var.environment}/data/opensearch/${local.elasticsearch_cluster_domain}" : ""
+  secretsmanager_description = "Vault secrets for ${local.elasticsearch_cluster_domain} opensearch"
   opensearch_password        = var.be_elasticsearch_is_production ? random_password.be_elasticsearch_master_user_password[0].result : var.be_elasticsearch_nonprod_master_user_password
   secretsmanager_json = {
     "opensearch_endpoint" = "https://${aws_elasticsearch_domain.be_elasticsearch_domain[0].endpoint}:443",

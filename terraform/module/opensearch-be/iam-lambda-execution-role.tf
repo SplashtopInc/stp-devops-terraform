@@ -2,7 +2,7 @@
 resource "aws_iam_role" "premium_inventory_lambda_execution_role" {
   count       = var.enabled ? 1 : 0
   description = "Premium Inventory Lambda Execution Role"
-  name        = "premium-inventory-lambda-execution-role-${local.elasticache_cluster_domain}"
+  name        = "premium-inventory-lambda-execution-role-${local.elasticsearch_cluster_domain}"
   path        = "/"
 
   assume_role_policy = jsonencode({
@@ -24,7 +24,7 @@ resource "aws_iam_role" "premium_inventory_lambda_execution_role" {
 resource "aws_iam_policy" "premium_inventory_lambda_execution_role_policy" {
   count       = var.enabled ? 1 : 0
   description = "Allow S3 for Premium Inventory Lambda"
-  name        = "premium-inventory-lambda-execution-role-policy-${local.elasticache_cluster_domain}"
+  name        = "premium-inventory-lambda-execution-role-policy-${local.elasticsearch_cluster_domain}"
   path        = "/"
   #tfsec:ignore:aws-iam-no-policy-wildcards
   policy = jsonencode({

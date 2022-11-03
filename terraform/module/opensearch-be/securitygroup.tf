@@ -3,8 +3,8 @@ resource "aws_security_group" "elasticsearch_sg" {
   #ts:skip=AC_AWS_0322 already add slow logs
   #bridgecrew:skip=CKV2_AWS_5:Attach in other place
   count       = var.enabled ? 1 : 0
-  description = "Security Group - ${local.elasticache_cluster_domain}"
-  name_prefix = "${local.elasticache_cluster_domain}-sg"
+  description = "Security Group - ${local.elasticsearch_cluster_domain}"
+  name_prefix = "${local.elasticsearch_cluster_domain}-sg"
   vpc_id      = data.aws_vpc.stp_vpc_db.id
 
   # Allow internal
@@ -33,7 +33,7 @@ resource "aws_security_group" "elasticsearch_sg" {
   }
 
   tags = {
-    Name = "${local.elasticache_cluster_domain}-sg"
+    Name = "${local.elasticsearch_cluster_domain}-sg"
   }
 }
 

@@ -10,5 +10,5 @@ locals {
   cluster_name_env     = substr(var.environment, 0, 4)
   cluster_name_suffix  = "${local.cluster_name_env}-${local.cluster_name_region}-${random_string.suffix.result}"
 
-  elasticache_cluster_domain = "es-db-${local.cluster_name_suffix}"
+  elasticsearch_cluster_domain = "es-db-${local.cluster_name_suffix}"
 }
