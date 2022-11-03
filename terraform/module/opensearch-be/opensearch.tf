@@ -132,3 +132,32 @@ resource "aws_elasticsearch_domain" "be_elasticsearch_domain" {
     aws_cloudwatch_log_group.elasticsearch_log_group_audit_logs
   ]
 }
+
+################################################################################
+# Secret Manager Module
+################################################################################
+
+locals {
+  secretsmanager_name        = var.enabled ? "${var.environment}/data/opensearch/${local.elasticache_cluster_domain}" : ""
+  secretsmanager_description = "Vault secrets for ${local.elasticache_cluster_domain} elasticache"
+  secretsmanager_json = {
+    "opensearch_endpoint" = "https://${aws_elasticsearch_domain.be_elasticsearch_domain[0].endpoint}:443"
+  }
+}
+
+#tfsec:ignore:aws-ssm-secret-use-customer-key
+resource "aws_secretsmanager_secret" "this" {
+  #checkov:skip=CKV_AWS_149: not use KMS key
+  #ts:skip=AWS.AKK.DP.HIGH.0012 skip
+  #ts:skip=AWS.SecretsManagerSecret.DP.MEDIUM.0036 skip
+  count                   = var.enabled ? 1 : 0
+  name                    = local.secretsmanager_name
+  description             = local.secretsmanager_description
+  recovery_window_in_days = 7
+}
+
+resource "aws_secretsmanager_secret_version" "this" {
+  count         = var.enabled ? 1 : 0
+  secret_id     = resource.aws_secretsmanager_secret.this[0].id
+  secret_string = jsonencode(local.secretsmanager_json)
+}
