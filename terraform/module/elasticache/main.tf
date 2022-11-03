@@ -77,3 +77,35 @@ resource "aws_elasticache_replication_group" "redis-replica-group" {
 
   notification_topic_arn = var.redis_sns_arn
 }
+
+################################################################################
+# Secret Manager Module
+################################################################################
+
+locals {
+  secretsmanager_name        = var.enabled ? "${var.environment}/data/elasticache/${local.cluster_name_suffix}" : ""
+  secretsmanager_description = "Vault secrets for ${local.cluster_name_suffix} elasticache"
+  secretsmanager_json = {
+    "REDIS_MASTER_URL"    = "${local.master_redis_url}",
+    "REDIS_NOAOF_URL"     = "${local.noaof_redis_url}",
+    "REDIS_TIMEOUT_URL"   = "${local.timeout_redis_url}",
+    "REDIS_WEBSOCKET_URL" = "${local.websocket_redis_url}"
+  }
+}
+
+#tfsec:ignore:aws-ssm-secret-use-customer-key
+resource "aws_secretsmanager_secret" "this" {
+  #checkov:skip=CKV_AWS_149: not use KMS key
+  #ts:skip=AWS.AKK.DP.HIGH.0012 skip
+  #ts:skip=AWS.SecretsManagerSecret.DP.MEDIUM.0036 skip
+  count                   = var.enabled ? 1 : 0
+  name                    = local.secretsmanager_name
+  description             = local.secretsmanager_description
+  recovery_window_in_days = 7
+}
+
+resource "aws_secretsmanager_secret_version" "this" {
+  count         = var.enabled ? 1 : 0
+  secret_id     = resource.aws_secretsmanager_secret.this[0].id
+  secret_string = jsonencode(local.secretsmanager_json)
+}

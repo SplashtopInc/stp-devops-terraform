@@ -14,6 +14,10 @@ locals {
 }
 
 locals {
-  redis     = zipmap(aws_elasticache_replication_group.redis-replica-group[*].primary_endpoint_address, aws_elasticache_replication_group.redis-replica-group[*].auth_token)
-  redis_url = formatlist("rediss://%s@%s:6379", values(local.redis), keys(local.redis))
+  redis               = zipmap(aws_elasticache_replication_group.redis-replica-group[*].primary_endpoint_address, aws_elasticache_replication_group.redis-replica-group[*].auth_token)
+  redis_url           = formatlist("rediss://%s@%s:6379", values(local.redis), keys(local.redis))
+  master_redis_url    = join(", ", [for s in local.redis_url : s if length(regexall("redis-master.*", s)) > 0])
+  noaof_redis_url     = join(", ", [for s in local.redis_url : s if length(regexall("redis-noaof.*", s)) > 0])
+  timeout_redis_url   = join(", ", [for s in local.redis_url : s if length(regexall("redis-timeout.*", s)) > 0])
+  websocket_redis_url = join(", ", [for s in local.redis_url : s if length(regexall("redis-websocket.*", s)) > 0])
 }

@@ -14,17 +14,17 @@ output "Redis_AuthToken" {
 
 output "master_redis_url" {
   sensitive = true
-  value     = join(", ", [for s in local.redis_url : s if length(regexall("redis-master.*", s)) > 0])
+  value     = local.master_redis_url
 }
 output "noaof_redis_url" {
   sensitive = true
-  value     = join(", ", [for s in local.redis_url : s if length(regexall("redis-noaof.*", s)) > 0])
+  value     = local.noaof_redis_url
 }
 output "timeout_redis_url" {
   sensitive = true
-  value     = join(", ", [for s in local.redis_url : s if length(regexall("redis-timeout.*", s)) > 0])
+  value     = local.timeout_redis_url
 }
 output "websocket_redis_url" {
   sensitive = true
-  value     = join(", ", [for s in local.redis_url : s if length(regexall("redis-websocket.*", s)) > 0])
+  value     = local.websocket_redis_url
 }
