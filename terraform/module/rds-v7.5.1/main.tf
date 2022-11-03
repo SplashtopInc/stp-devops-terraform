@@ -141,14 +141,14 @@ module "db2" {
 ################################################################################
 
 locals {
-  secretsmanager_name        = (var.db1_enable || var.db2_enable) ? "${var.environment}/data/${local.cluster_name_suffix}" : ""
+  secretsmanager_name        = (var.db1_enable || var.db2_enable) ? "${var.environment}/data/rds/${local.cluster_name_suffix}" : ""
   secretsmanager_description = "Vault secrets for ${local.cluster_name_suffix} aurora-mysql"
   secretsmanager_json = {
     "db1_writer_endpoint" = "${module.db1.cluster_endpoint}",
     "db1_reader_endpoint" = "${module.db1.cluster_reader_endpoint}",
     "db2_writer_endpoint" = "${module.db2.cluster_endpoint}",
     "db2_reader_endpoint" = "${module.db2.cluster_reader_endpoint}",
-    "db1_password"        = "${module.db1.cluster_master_password}"
+    "db1_password"        = "${module.db1.cluster_master_password}",
     "db2_password"        = "${module.db2.cluster_master_password}"
   }
 }
