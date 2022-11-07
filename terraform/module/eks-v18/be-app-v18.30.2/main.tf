@@ -581,7 +581,7 @@ data "aws_iam_policy_document" "ebs" {
 
 locals {
   secretsmanager_name        = var.create ? "${var.environment}/data/${var.aws_account_name}/${local.app_cluster_name}/${local.api_name}" : ""
-  secretsmanager_description = "Vault secrets for ${local.app_cluster_name}"
+  secretsmanager_description = "Vault secrets for ${local.app_cluster_name} be-app"
 }
 #tfsec:ignore:aws-ssm-secret-use-customer-key
 resource "aws_secretsmanager_secret" "this" {
@@ -593,3 +593,35 @@ resource "aws_secretsmanager_secret" "this" {
   description             = local.secretsmanager_description
   recovery_window_in_days = 7
 }
+
+################################################################################
+# Secret Manager Module for eks output
+################################################################################
+
+locals {
+  secretsmanager_eks_name        = var.create ? "${var.environment}/data/eks/${local.app_cluster_name}" : ""
+  secretsmanager_eks_description = "Vault secrets for ${local.app_cluster_name} eks"
+  secretsmanager_json = {
+    "cluster_id"                                = "${module.eks.cluster_id}",
+    "cluster_endpoint"                          = "${module.eks.cluster_endpoint}",
+    "decode_cluster_certificate_authority_data" = "${base64decode(module.eks.cluster_certificate_authority_data)}",
+    "secretsmanager_secret_name"                = "${local.secretsmanager_name}"
+  }
+}
+#tfsec:ignore:aws-ssm-secret-use-customer-key
+resource "aws_secretsmanager_secret" "eks" {
+  #checkov:skip=CKV_AWS_149: not use KMS key
+  #ts:skip=AWS.AKK.DP.HIGH.0012 skip
+  #ts:skip=AWS.SecretsManagerSecret.DP.MEDIUM.0036 skip
+  count                   = var.create ? 1 : 0
+  name                    = local.secretsmanager_eks_name
+  description             = local.secretsmanager_eks_description
+  recovery_window_in_days = 7
+}
+
+resource "aws_secretsmanager_secret_version" "eks" {
+  count         = var.create ? 1 : 0
+  secret_id     = resource.aws_secretsmanager_secret.eks[0].id
+  secret_string = jsonencode(local.secretsmanager_json)
+}
+
