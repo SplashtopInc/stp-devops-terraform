@@ -141,8 +141,9 @@ locals {
   secretsmanager_name        = var.enabled ? "${var.environment}/data/opensearch/${local.elasticsearch_cluster_domain}" : ""
   secretsmanager_description = "Vault secrets for ${local.elasticsearch_cluster_domain} opensearch"
   opensearch_password        = var.be_elasticsearch_is_production ? random_password.be_elasticsearch_master_user_password[0].result : var.be_elasticsearch_nonprod_master_user_password
+  opensearch_endpoint        = var.enabled ? "https://${aws_elasticsearch_domain.be_elasticsearch_domain[0].endpoint}:443" : ""
   secretsmanager_json = {
-    "opensearch_endpoint" = "https://${aws_elasticsearch_domain.be_elasticsearch_domain[0].endpoint}:443",
+    "opensearch_endpoint" = "${local.opensearch_endpoint}",
     "opensearch_password" = "${local.opensearch_password}"
   }
 }
