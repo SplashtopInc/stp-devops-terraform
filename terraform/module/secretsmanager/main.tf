@@ -3,7 +3,7 @@
 ################################################################################
 
 locals {
-  secretsmanager_name        = "${var.environment}/${var.account}/${var.secret_name}"
+  secretsmanager_name        = var.secret_name
   secretsmanager_description = var.secret_description
 }
 #tfsec:ignore:aws-ssm-secret-use-customer-key
