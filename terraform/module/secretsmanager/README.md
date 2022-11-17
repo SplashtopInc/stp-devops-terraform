@@ -7,7 +7,7 @@ No requirements.
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.30.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
 
 ## Modules
 
@@ -38,6 +38,6 @@ No modules.
 
 | Name | Description |
 |------|-------------|
-| <a name="output_github-user-token"></a> [github-user-token](#output\_github-user-token) | gh\_token secret value |
+| <a name="output_github_user_token"></a> [github\_user\_token](#output\_github\_user\_token) | gh\_token secret value |
 | <a name="output_secretsmanager_secret_name"></a> [secretsmanager\_secret\_name](#output\_secretsmanager\_secret\_name) | secrets manager for stored secret |
 <!-- END_TF_DOCS -->
