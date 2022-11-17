@@ -13,14 +13,13 @@ variable "github_base_url" {
 variable "github_token" {
   description = "Github token to use when creating webhook"
   type        = string
-  #tfsec:ignore:general-secrets-no-plaintext-exposure
-  default = ""
+  default     = ""
 }
 
 variable "github_owner" {
   description = "Github owner to use when creating webhook"
   type        = string
-  default     = "SplashtopInc"
+  default     = ""
 }
 
 variable "atlantis_repo_allowlist" {
@@ -37,6 +36,5 @@ variable "webhook_url" {
 variable "webhook_secret" {
   description = "Webhook secret"
   type        = string
-  #tfsec:ignore:general-secrets-no-plaintext-exposure
-  default = ""
+  default     = ""
 }
