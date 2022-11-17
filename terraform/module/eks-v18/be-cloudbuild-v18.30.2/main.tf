@@ -424,7 +424,7 @@ data "aws_eks_cluster" "this" {
 }
 
 locals {
-  kubeconfig = yamlencode({
+  kubeconfig = var.create ? yamlencode({
     apiVersion      = "v1"
     kind            = "Config"
     current-context = "terraform"
@@ -448,15 +448,15 @@ locals {
         token = data.aws_eks_cluster_auth.this[0].token
       }
     }]
-  })
+  }) : "{}"
 
-  template_vars = {
+  template_vars = var.create ? {
     cluster_name     = module.eks.cluster_id
     cluster_endpoint = module.eks.cluster_endpoint
     cluster_ca       = data.aws_eks_cluster.this[0].certificate_authority[0].data
     cluster_profile  = var.profile
     cluster_region   = var.region
-  }
+  } : {}
 
   // kubeconfig = templatefile("./kubeconfig.tpl", local.template_vars)
 
