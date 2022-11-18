@@ -12,8 +12,11 @@ data "aws_ami" "cloudbuild_node_ami" {
 }
 ### get vpc info
 data "aws_vpc" "stp-vpc-backend" {
-  tags = {
-    Name = "stp-vpc-backend-${var.region}"
+  filter {
+    name = "tag:Name"
+    values = [
+      "stp-vpc-backend-${var.region}"
+    ]
   }
 }
 
