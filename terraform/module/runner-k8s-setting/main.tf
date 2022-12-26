@@ -30,6 +30,13 @@ resource "kubernetes_secret" "runner-secrets" {
  *****************************************/
 resource "kubernetes_deployment" "runner-deployment" {
   #checkov:skip=CKV_K8S_29:DinD need root permissions
+  #checkov:skip=CKV_K8S_22:DinD need root permissions
+  #checkov:skip=CKV_K8S_16:DinD need root permissions
+  #checkov:skip=CKV_K8S_8:skip Liveness Probe
+  #checkov:skip=CKV_K8S_9:skip Readiness Probe
+  #checkov:skip=CKV_K8S_35:use secrets file
+  #checkov:skip=CKV_K8S_14:Image Tag
+  #checkov:skip=CKV_K8S_43:Image should use digest
   metadata {
     name      = "runner-dind-deployment"
     namespace = kubernetes_namespace.runner.metadata[0].name
@@ -56,9 +63,9 @@ resource "kubernetes_deployment" "runner-deployment" {
 
       spec {
         container {
-          name  = "runner"
-          image = var.runner_iamge
-
+          name              = "runner"
+          image             = var.runner_iamge
+          image_pull_policy = "Always"
 
           env {
             name = "ACTIONS_RUNNER_INPUT_URL"
@@ -118,10 +125,18 @@ resource "kubernetes_deployment" "runner-deployment" {
               memory = var.runner_resources_memory_requests
             }
           }
+          security_context {
+            # privileged = true
+            capabilities {
+              drop = ["NET_RAW", "ALL"]
+            }
+          }
         }
+
         container {
-          name  = "dind"
-          image = "docker:18.05-dind"
+          name              = "dind"
+          image             = "docker:18.05-dind"
+          image_pull_policy = "Always"
 
           resources {
             limits = {
@@ -136,7 +151,11 @@ resource "kubernetes_deployment" "runner-deployment" {
 
           security_context {
             privileged = true
+            capabilities {
+              drop = ["NET_RAW", "ALL"]
+            }
           }
+
           volume_mount {
             name       = "dind-storage"
             mount_path = "/var/lib/docker"
