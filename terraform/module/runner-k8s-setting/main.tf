@@ -37,6 +37,8 @@ resource "kubernetes_deployment" "runner-deployment" {
   #checkov:skip=CKV_K8S_35:use secrets file
   #checkov:skip=CKV_K8S_14:Image Tag
   #checkov:skip=CKV_K8S_43:Image should use digest
+  #checkov:skip=CKV_K8S_28:
+  #checkov:skip=CKV_K8S_30:
   metadata {
     name      = "runner-dind-deployment"
     namespace = kubernetes_namespace.runner.metadata[0].name
@@ -125,12 +127,6 @@ resource "kubernetes_deployment" "runner-deployment" {
               memory = var.runner_resources_memory_requests
             }
           }
-          security_context {
-            # privileged = true
-            capabilities {
-              drop = ["NET_RAW", "ALL"]
-            }
-          }
         }
 
         container {
@@ -151,9 +147,6 @@ resource "kubernetes_deployment" "runner-deployment" {
 
           security_context {
             privileged = true
-            capabilities {
-              drop = ["NET_RAW", "ALL"]
-            }
           }
 
           volume_mount {
