@@ -37,7 +37,7 @@ output "vpc-cidr-block-str" {
 }
 
 output "stp-vpc-private-subnet-ids" {
-  value = data.aws_subnet_ids.stp-vpc-private.ids
+  value = data.aws_subnets.stp-vpc-private.ids
 }
 
 output "stp-vpc-default-sg" {

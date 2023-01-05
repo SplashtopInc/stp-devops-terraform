@@ -3,14 +3,15 @@ data "aws_availability_zones" "available" {
 }
 data "aws_caller_identity" "current" {}
 
-data "aws_subnet_ids" "stp-vpc-private" {
-  vpc_id = module.vpc.vpc_id
+data "aws_subnets" "stp-vpc-private" {
+  filter {
+    name   = "vpc-id"
+    values = [module.vpc.vpc_id]
+  }
 
   filter {
-    name = "tag:Name"
-    values = [
-      "${var.name}-private-${var.region}*"
-    ]
+    name   = "tag:Name"
+    values = ["${var.name}-private-${var.region}*"]
   }
 
   depends_on = [module.vpc]
