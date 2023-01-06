@@ -76,6 +76,11 @@ module "eks" {
   create_aws_auth_configmap = true
   manage_aws_auth_configmap = true
 
+  aws_auth_roles    = var.aws_auth_roles
+  aws_auth_users    = var.aws_auth_users
+  aws_auth_accounts = var.aws_auth_accounts
+
+
   # Extend node-to-node security group rules
   node_security_group_additional_rules = {
     ## ref: https://github.com/kubernetes-sigs/aws-load-balancer-controller/issues/2039#issuecomment-1099032289
