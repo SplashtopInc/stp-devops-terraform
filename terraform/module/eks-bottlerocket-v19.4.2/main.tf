@@ -202,11 +202,11 @@ module "eks" {
       # }
 
       create_iam_role          = false
-      iam_role_name            = "self-managed-node-group-sonarqube"
+      iam_role_name            = "self-managed-node-group-runner"
       iam_role_use_name_prefix = false
-      iam_role_description     = "Self managed node group sonarqube role"
+      iam_role_description     = "Self managed node group runner role"
       iam_role_tags = {
-        Purpose = "Protector of the kubelet"
+        Purpose = "Protector of the runner group"
       }
       iam_role_additional_policies = {
         additional_1 = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
@@ -305,7 +305,7 @@ module "eks" {
       iam_role_use_name_prefix = false
       iam_role_description     = "Self managed node group sonarqube role"
       iam_role_tags = {
-        Purpose = "Protector of the kubelet"
+        Purpose = "Protector of the sonarqube group"
       }
       iam_role_additional_policies = {
         additional_1 = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
