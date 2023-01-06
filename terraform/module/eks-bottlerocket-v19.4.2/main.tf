@@ -74,34 +74,13 @@ module "eks" {
   subnet_ids = var.subnet_ids
 
   # Self managed node groups will not automatically create the aws-auth configmap so we need to
-  create_aws_auth_configmap = true
-  manage_aws_auth_configmap = true
+  # create_aws_auth_configmap = true
+  # manage_aws_auth_configmap = true
 
-  aws_auth_roles    = var.aws_auth_roles
-  aws_auth_users    = var.aws_auth_users
-  aws_auth_accounts = var.aws_auth_accounts
+  # aws_auth_roles    = var.aws_auth_roles
+  # aws_auth_users    = var.aws_auth_users
+  # aws_auth_accounts = var.aws_auth_accounts
 
-
-  # # Extend node-to-node security group rules
-  # node_security_group_additional_rules = {
-  #   ## ref: https://github.com/kubernetes-sigs/aws-load-balancer-controller/issues/2039#issuecomment-1099032289
-  #   ingress_allow_access_from_control_plane = {
-  #     type                          = "ingress"
-  #     protocol                      = "tcp"
-  #     from_port                     = 9443
-  #     to_port                       = 9443
-  #     source_cluster_security_group = true
-  #     description                   = "Allow access from control plane to webhook port of AWS load balancer controller"
-  #   }
-  #   ingress_allow_metrics_from_control_plane = {
-  #     type                          = "ingress"
-  #     protocol                      = "tcp"
-  #     from_port                     = 8443
-  #     to_port                       = 8443
-  #     source_cluster_security_group = true
-  #     description                   = "Allow access from control plane to metrics-server"
-  #   }
-  # }
 
   self_managed_node_group_defaults = {
     # enable discovery of autoscaling groups by cluster-autoscaler
@@ -347,5 +326,94 @@ data "aws_ami" "eks_default_bottlerocket" {
   filter {
     name   = "name"
     values = ["bottlerocket-aws-k8s-${var.cluster_version}-x86_64-*"]
+  }
+}
+
+################################################################################
+# aws-auth configmap
+# Only EKS managed node groups automatically add roles to aws-auth configmap
+# so we need to ensure fargate profiles and self-managed node roles are added
+################################################################################
+
+data "aws_eks_cluster_auth" "this" {
+  count = var.create ? 1 : 0
+  name  = module.eks.cluster_id
+}
+
+data "aws_eks_cluster" "this" {
+  count = var.create ? 1 : 0
+  name  = module.eks.cluster_id
+}
+
+locals {
+  kubeconfig = var.create ? yamlencode({
+    apiVersion      = "v1"
+    kind            = "Config"
+    current-context = "terraform"
+    clusters = [{
+      name = module.eks.cluster_id
+      cluster = {
+        certificate-authority-data = module.eks.cluster_certificate_authority_data
+        server                     = module.eks.cluster_endpoint
+      }
+    }]
+    contexts = [{
+      name = "terraform"
+      context = {
+        cluster = module.eks.cluster_id
+        user    = "terraform"
+      }
+    }]
+    users = [{
+      name = "terraform"
+      user = {
+        token = data.aws_eks_cluster_auth.this[0].token
+      }
+    }]
+  }) : "{}"
+
+  template_vars = var.create ? {
+    cluster_name     = module.eks.cluster_id
+    cluster_endpoint = module.eks.cluster_endpoint
+    cluster_ca       = data.aws_eks_cluster.this[0].certificate_authority[0].data
+    cluster_profile  = var.profile
+    cluster_region   = var.region
+  } : {}
+
+  // kubeconfig = templatefile("./kubeconfig.tpl", local.template_vars)
+
+  map_roles = var.map_roles
+  map_users = var.map_users
+
+  # we have to combine the configmap created by the eks module with the externally created node group/profile sub-modules
+  current_auth_configmap = module.eks.aws_auth_configmap_yaml != null ? yamldecode(module.eks.aws_auth_configmap_yaml) : yamldecode("")
+  updated_auth_configmap_data = var.create ? {
+    data = {
+      mapRoles = yamlencode(
+        distinct(concat(
+          yamldecode(local.current_auth_configmap.data.mapRoles), local.map_roles, )
+      ))
+      mapUsers = yamlencode(local.map_users)
+    }
+    } : {
+  }
+}
+
+resource "null_resource" "apply" {
+  count = var.create ? 1 : 0
+  triggers = {
+    kubeconfig = base64encode(local.kubeconfig)
+    cmd_patch  = <<-EOT
+      kubectl create configmap aws-auth -n kube-system --dry-run=client -o yaml --kubeconfig <(echo $KUBECONFIG | base64 --decode) | kubectl apply -f - -n kube-system --kubeconfig <(echo $KUBECONFIG | base64 --decode)
+      kubectl patch configmap/aws-auth -n kube-system --type merge -p '${chomp(jsonencode(local.updated_auth_configmap_data))}' --kubeconfig <(echo $KUBECONFIG | base64 --decode)
+    EOT
+  }
+
+  provisioner "local-exec" {
+    interpreter = ["/bin/bash", "-c"]
+    environment = {
+      KUBECONFIG = self.triggers.kubeconfig
+    }
+    command = self.triggers.cmd_patch
   }
 }

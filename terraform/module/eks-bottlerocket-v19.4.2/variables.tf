@@ -629,6 +629,27 @@ variable "aws_account_name" {
   # AWS account name e.g., "aws-polkast", "aws-gstun", "aws-rd", "aws-tperd" ...
 }
 
+variable "map_roles" {
+  description = "Additional IAM roles to add to the aws-auth configmap."
+  type = list(object({
+    rolearn  = string
+    username = string
+    groups   = list(string)
+  }))
+
+  default = []
+}
+
+variable "map_users" {
+  description = "Additional IAM users to add to the aws-auth configmap."
+  type = list(object({
+    userarn  = string
+    username = string
+    groups   = list(string)
+  }))
+
+  default = []
+}
 ############runner Self managed node groups
 variable "runner_instance_types" {
   description = "(Optional) List of instance types associated with the EKS Node Group."
