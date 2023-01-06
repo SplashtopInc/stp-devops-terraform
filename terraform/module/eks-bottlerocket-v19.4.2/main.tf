@@ -48,7 +48,7 @@ module "eks" {
   version = "19.4.2"
 
   create                          = var.create
-  cluster_name                    = var.cluster_name ? var.cluster_name : local.name
+  cluster_name                    = var.cluster_name != "" ? var.cluster_name : local.name
   cluster_version                 = var.cluster_version
   cluster_endpoint_private_access = true
   cluster_endpoint_public_access  = true
