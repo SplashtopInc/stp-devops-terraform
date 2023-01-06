@@ -112,7 +112,7 @@ module "eks" {
 
   self_managed_node_groups = {
     # Default node group - as provisioned by the module defaults
-    default_node_group = {}
+    # default_node_group = {}
 
     # runner node group
     runner = {
