@@ -201,7 +201,7 @@ module "eks" {
       #   }
       # }
 
-      create_iam_role          = true
+      create_iam_role          = false
       iam_role_name            = "self-managed-node-group-sonarqube"
       iam_role_use_name_prefix = false
       iam_role_description     = "Self managed node group sonarqube role"
@@ -300,7 +300,7 @@ module "eks" {
       #   }
       # }
 
-      create_iam_role          = true
+      create_iam_role          = false
       iam_role_name            = "self-managed-node-group-sonarqube"
       iam_role_use_name_prefix = false
       iam_role_description     = "Self managed node group sonarqube role"
