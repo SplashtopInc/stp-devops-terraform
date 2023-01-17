@@ -337,83 +337,83 @@ data "aws_ami" "eks_default_bottlerocket" {
 
 data "aws_eks_cluster_auth" "this" {
   count = var.create ? 1 : 0
-  name  = module.eks.cluster_id
+  name  = "runner-tperd-t-apn3-b2l0qv7r" #module.eks.cluster_id
 }
 
 data "aws_eks_cluster" "this" {
   count = var.create ? 1 : 0
-  name  = module.eks.cluster_id
+  name  = "runner-tperd-t-apn3-b2l0qv7r" #module.eks.cluster_id
 }
 
-locals {
-  kubeconfig = var.create ? yamlencode({
-    apiVersion      = "v1"
-    kind            = "Config"
-    current-context = "terraform"
-    clusters = [{
-      name = module.eks.cluster_id
-      cluster = {
-        certificate-authority-data = module.eks.cluster_certificate_authority_data
-        server                     = module.eks.cluster_endpoint
-      }
-    }]
-    contexts = [{
-      name = "terraform"
-      context = {
-        cluster = module.eks.cluster_id
-        user    = "terraform"
-      }
-    }]
-    users = [{
-      name = "terraform"
-      user = {
-        token = data.aws_eks_cluster_auth.this[0].token
-      }
-    }]
-  }) : "{}"
+# locals {
+#   kubeconfig = var.create ? yamlencode({
+#     apiVersion      = "v1"
+#     kind            = "Config"
+#     current-context = "terraform"
+#     clusters = [{
+#       name = module.eks.cluster_id
+#       cluster = {
+#         certificate-authority-data = module.eks.cluster_certificate_authority_data
+#         server                     = module.eks.cluster_endpoint
+#       }
+#     }]
+#     contexts = [{
+#       name = "terraform"
+#       context = {
+#         cluster = module.eks.cluster_id
+#         user    = "terraform"
+#       }
+#     }]
+#     users = [{
+#       name = "terraform"
+#       user = {
+#         token = data.aws_eks_cluster_auth.this[0].token
+#       }
+#     }]
+#   }) : "{}"
 
-  template_vars = var.create ? {
-    cluster_name     = module.eks.cluster_id
-    cluster_endpoint = module.eks.cluster_endpoint
-    cluster_ca       = data.aws_eks_cluster.this[0].certificate_authority[0].data
-    cluster_profile  = var.profile
-    cluster_region   = var.region
-  } : {}
+#   template_vars = var.create ? {
+#     cluster_name     = module.eks.cluster_id
+#     cluster_endpoint = module.eks.cluster_endpoint
+#     cluster_ca       = data.aws_eks_cluster.this[0].certificate_authority[0].data
+#     cluster_profile  = var.profile
+#     cluster_region   = var.region
+#   } : {}
 
-  // kubeconfig = templatefile("./kubeconfig.tpl", local.template_vars)
+#   // kubeconfig = templatefile("./kubeconfig.tpl", local.template_vars)
 
-  map_roles = var.map_roles
-  map_users = var.map_users
+#   map_roles = var.map_roles
+#   map_users = var.map_users
 
-  # we have to combine the configmap created by the eks module with the externally created node group/profile sub-modules
-  current_auth_configmap = module.eks.aws_auth_configmap_yaml != null ? yamldecode(module.eks.aws_auth_configmap_yaml) : yamldecode("")
-  updated_auth_configmap_data = var.create ? {
-    data = {
-      mapRoles = yamlencode(
-        distinct(concat(
-          yamldecode(local.current_auth_configmap.data.mapRoles), local.map_roles, )
-      ))
-      mapUsers = yamlencode(local.map_users)
-    }
-    } : {
-  }
-}
+#   # we have to combine the configmap created by the eks module with the externally created node group/profile sub-modules
+#   current_auth_configmap = module.eks.aws_auth_configmap_yaml != null ? yamldecode(module.eks.aws_auth_configmap_yaml) : yamldecode("")
+#   updated_auth_configmap_data = var.create ? {
+#     data = {
+#       mapRoles = yamlencode(
+#         distinct(concat(
+#           yamldecode(local.current_auth_configmap.data.mapRoles), local.map_roles, )
+#       ))
+#       mapUsers = yamlencode(local.map_users)
+#     }
+#     } : {
+#   }
+# }
 
-resource "null_resource" "apply" {
-  count = var.create ? 1 : 0
-  triggers = {
-    kubeconfig = base64encode(local.kubeconfig)
-    cmd_patch  = <<-EOT
-      kubectl create configmap aws-auth -n kube-system --dry-run=client -o yaml --kubeconfig <(echo $KUBECONFIG | base64 --decode) | kubectl apply -f - -n kube-system --kubeconfig <(echo $KUBECONFIG | base64 --decode)
-      kubectl patch configmap/aws-auth -n kube-system --type merge -p '${chomp(jsonencode(local.updated_auth_configmap_data))}' --kubeconfig <(echo $KUBECONFIG | base64 --decode)
-    EOT
-  }
+# resource "null_resource" "apply" {
+#   count = var.create ? 1 : 0
+#   triggers = {
+#     kubeconfig = base64encode(local.kubeconfig)
+#     cmd_patch  = <<-EOT
+#       kubectl create configmap aws-auth -n kube-system --dry-run=client -o yaml --kubeconfig <(echo $KUBECONFIG | base64 --decode) | kubectl apply -f - -n kube-system --kubeconfig <(echo $KUBECONFIG | base64 --decode)
+#       kubectl patch configmap/aws-auth -n kube-system --type merge -p '${chomp(jsonencode(local.updated_auth_configmap_data))}' --kubeconfig <(echo $KUBECONFIG | base64 --decode)
+#     EOT
+#   }
 
-  provisioner "local-exec" {
-    interpreter = ["/bin/bash", "-c"]
-    environment = {
-      KUBECONFIG = self.triggers.kubeconfig
-    }
-    command = self.triggers.cmd_patch
-  }
-}
+#   provisioner "local-exec" {
+#     interpreter = ["/bin/bash", "-c"]
+#     environment = {
+#       KUBECONFIG = self.triggers.kubeconfig
+#     }
+#     command = self.triggers.cmd_patch
+#   }
+# }
