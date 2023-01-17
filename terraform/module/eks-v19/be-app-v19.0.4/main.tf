@@ -95,37 +95,37 @@ module "eks" {
   cluster_service_ipv4_cidr = var.cluster_service_ipv4_cidr
 
   # Extend cluster security group rules
-  cluster_security_group_additional_rules = {
-    egress_nodes_ephemeral_ports_tcp = {
-      description                = "To node 1025-65535"
-      protocol                   = "tcp"
-      from_port                  = 1025
-      to_port                    = 65535
-      type                       = "egress"
-      source_node_security_group = true
-    }
-  }
+  # cluster_security_group_additional_rules = {
+  #   egress_nodes_ephemeral_ports_tcp = {
+  #     description                = "To node 1025-65535"
+  #     protocol                   = "tcp"
+  #     from_port                  = 1025
+  #     to_port                    = 65535
+  #     type                       = "egress"
+  #     source_node_security_group = true
+  #   }
+  # }
 
   # Extend node-to-node security group rules
-  node_security_group_additional_rules = {
-    ## ref: https://github.com/kubernetes-sigs/aws-load-balancer-controller/issues/2039#issuecomment-1099032289
-    ingress_allow_access_from_control_plane = {
-      type                          = "ingress"
-      protocol                      = "tcp"
-      from_port                     = 9443
-      to_port                       = 9443
-      source_cluster_security_group = true
-      description                   = "Allow access from control plane to webhook port of AWS load balancer controller"
-    }
-    ingress_allow_metrics_from_control_plane = {
-      type                          = "ingress"
-      protocol                      = "tcp"
-      from_port                     = 8443
-      to_port                       = 8443
-      source_cluster_security_group = true
-      description                   = "Allow access from control plane to metrics-server"
-    }
-  }
+  # node_security_group_additional_rules = {
+  #   ## ref: https://github.com/kubernetes-sigs/aws-load-balancer-controller/issues/2039#issuecomment-1099032289
+  #   ingress_allow_access_from_control_plane = {
+  #     type                          = "ingress"
+  #     protocol                      = "tcp"
+  #     from_port                     = 9443
+  #     to_port                       = 9443
+  #     source_cluster_security_group = true
+  #     description                   = "Allow access from control plane to webhook port of AWS load balancer controller"
+  #   }
+  #   ingress_allow_metrics_from_control_plane = {
+  #     type                          = "ingress"
+  #     protocol                      = "tcp"
+  #     from_port                     = 8443
+  #     to_port                       = 8443
+  #     source_cluster_security_group = true
+  #     description                   = "Allow access from control plane to metrics-server"
+  #   }
+  # }
 
   self_managed_node_group_defaults = {
     create_security_group = false
