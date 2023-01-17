@@ -120,9 +120,9 @@ module "eks" {
         # extra args added
         [settings.kernel]
         lockdown = "integrity"
-        [settings.kubernetes.node-taints]
-        dedicated = "experimental:PreferNoSchedule"
-        special = "true:NoSchedule"
+        # [settings.kubernetes.node-taints]
+        # dedicated = "experimental:PreferNoSchedule"
+        # special = "true:NoSchedule"
       EOT
 
       # pre_bootstrap_user_data = <<-EOT
