@@ -576,5 +576,6 @@ resource "aws_secretsmanager_secret_version" "eks" {
   count         = var.create ? 1 : 0
   secret_id     = resource.aws_secretsmanager_secret.eks[0].id
   secret_string = jsonencode(local.secretsmanager_json)
+  depends_on    = [module.eks]
 }
 
