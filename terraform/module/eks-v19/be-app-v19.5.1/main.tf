@@ -140,12 +140,12 @@ module "eks" {
         xvda = {
           device_name = "/dev/xvda"
           ebs = {
-            volume_size           = 50
-            volume_type           = "gp3"
-            iops                  = 3000
-            throughput            = 150
-            encrypted             = true
-            kms_key_id            = var.create ? aws_kms_key.ebs[0].arn : null
+            volume_size = 50
+            volume_type = "gp3"
+            iops        = 3000
+            throughput  = 150
+            # encrypted             = true
+            # kms_key_id            = var.create ? aws_kms_key.ebs[0].arn : null
             delete_on_termination = true
           }
         }
@@ -221,12 +221,12 @@ module "eks" {
         xvda = {
           device_name = "/dev/xvda"
           ebs = {
-            volume_size           = 50
-            volume_type           = "gp3"
-            iops                  = 3000
-            throughput            = 150
-            encrypted             = true
-            kms_key_id            = var.create ? aws_kms_key.ebs[0].arn : null
+            volume_size = 50
+            volume_type = "gp3"
+            iops        = 3000
+            throughput  = 150
+            # encrypted             = true
+            # kms_key_id            = var.create ? aws_kms_key.ebs[0].arn : null
             delete_on_termination = true
           }
         }
@@ -302,12 +302,12 @@ module "eks" {
         xvda = {
           device_name = "/dev/xvda"
           ebs = {
-            volume_size           = 50
-            volume_type           = "gp3"
-            iops                  = 3000
-            throughput            = 150
-            encrypted             = true
-            kms_key_id            = var.create ? aws_kms_key.ebs[0].arn : null
+            volume_size = 50
+            volume_type = "gp3"
+            iops        = 3000
+            throughput  = 150
+            # encrypted             = true
+            # kms_key_id            = var.create ? aws_kms_key.ebs[0].arn : null
             delete_on_termination = true
           }
         }
@@ -461,73 +461,73 @@ resource "aws_kms_key" "eks" {
   tags = local.tags
 }
 
-#tfsec:ignore:aws-kms-auto-rotate-keys:skip key rotate
-resource "aws_kms_key" "ebs" {
-  #checkov:skip=CKV_AWS_7:sikp
-  #ts:skip=AC_AWS_0160 skip key rotate
-  count                   = var.create ? 1 : 0
-  description             = "Customer managed key to encrypt self managed node group volumes"
-  deletion_window_in_days = 7
-  policy                  = data.aws_iam_policy_document.ebs.json
-}
+# #tfsec:ignore:aws-kms-auto-rotate-keys:skip key rotate
+# resource "aws_kms_key" "ebs" {
+#   #checkov:skip=CKV_AWS_7:sikp
+#   #ts:skip=AC_AWS_0160 skip key rotate
+#   count                   = var.create ? 1 : 0
+#   description             = "Customer managed key to encrypt self managed node group volumes"
+#   deletion_window_in_days = 7
+#   policy                  = data.aws_iam_policy_document.ebs.json
+# }
 
-# This policy is required for the KMS key used for EKS root volumes, so the cluster is allowed to enc/dec/attach encrypted EBS volumes
-data "aws_iam_policy_document" "ebs" {
-  #checkov:skip=CKV_AWS_111:sikp
-  #checkov:skip=CKV_AWS_109:sikp
-  # Copy of default KMS policy that lets you manage it
-  statement {
-    sid       = "Enable IAM User Permissions"
-    actions   = ["kms:*"]
-    resources = ["*"]
+# # This policy is required for the KMS key used for EKS root volumes, so the cluster is allowed to enc/dec/attach encrypted EBS volumes
+# data "aws_iam_policy_document" "ebs" {
+#   #checkov:skip=CKV_AWS_111:sikp
+#   #checkov:skip=CKV_AWS_109:sikp
+#   # Copy of default KMS policy that lets you manage it
+#   statement {
+#     sid       = "Enable IAM User Permissions"
+#     actions   = ["kms:*"]
+#     resources = ["*"]
 
-    principals {
-      type        = "AWS"
-      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
-    }
-  }
+#     principals {
+#       type        = "AWS"
+#       identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
+#     }
+#   }
 
-  # Required for EKS
-  statement {
-    sid = "Allow service-linked role use of the CMK"
-    actions = [
-      "kms:Encrypt",
-      "kms:Decrypt",
-      "kms:ReEncrypt*",
-      "kms:GenerateDataKey*",
-      "kms:DescribeKey"
-    ]
-    resources = ["*"]
+#   # Required for EKS
+#   statement {
+#     sid = "Allow service-linked role use of the CMK"
+#     actions = [
+#       "kms:Encrypt",
+#       "kms:Decrypt",
+#       "kms:ReEncrypt*",
+#       "kms:GenerateDataKey*",
+#       "kms:DescribeKey"
+#     ]
+#     resources = ["*"]
 
-    principals {
-      type = "AWS"
-      identifiers = [
-        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling", # required for the ASG to manage encrypted volumes for nodes
-        module.eks.cluster_iam_role_arn,                                                                                                            # required for the cluster / persistentvolume-controller to create encrypted PVCs
-      ]
-    }
-  }
+#     principals {
+#       type = "AWS"
+#       identifiers = [
+#         "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling", # required for the ASG to manage encrypted volumes for nodes
+#         module.eks.cluster_iam_role_arn,                                                                                                            # required for the cluster / persistentvolume-controller to create encrypted PVCs
+#       ]
+#     }
+#   }
 
-  statement {
-    sid       = "Allow attachment of persistent resources"
-    actions   = ["kms:CreateGrant"]
-    resources = ["*"]
+#   statement {
+#     sid       = "Allow attachment of persistent resources"
+#     actions   = ["kms:CreateGrant"]
+#     resources = ["*"]
 
-    principals {
-      type = "AWS"
-      identifiers = [
-        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling", # required for the ASG to manage encrypted volumes for nodes
-        module.eks.cluster_iam_role_arn,                                                                                                            # required for the cluster / persistentvolume-controller to create encrypted PVCs
-      ]
-    }
+#     principals {
+#       type = "AWS"
+#       identifiers = [
+#         "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling", # required for the ASG to manage encrypted volumes for nodes
+#         module.eks.cluster_iam_role_arn,                                                                                                            # required for the cluster / persistentvolume-controller to create encrypted PVCs
+#       ]
+#     }
 
-    condition {
-      test     = "Bool"
-      variable = "kms:GrantIsForAWSResource"
-      values   = ["true"]
-    }
-  }
-}
+#     condition {
+#       test     = "Bool"
+#       variable = "kms:GrantIsForAWSResource"
+#       values   = ["true"]
+#     }
+#   }
+# }
 ################################################################################
 # Secret Manager Module
 ################################################################################
