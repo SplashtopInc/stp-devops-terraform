@@ -176,10 +176,10 @@ output "all_nodes_role_name" {
   value       = [for s in module.eks.self_managed_node_groups : s.iam_role_name if s.iam_role_name != ""]
 }
 
-output "decode_cluster_certificate_authority_data" {
-  description = "decode certificate data required to communicate with the cluster"
-  value       = base64decode(module.eks.cluster_certificate_authority_data)
-}
+# output "decode_cluster_certificate_authority_data" {
+#   description = "decode certificate data required to communicate with the cluster"
+#   value       = base64decode(module.eks.cluster_certificate_authority_data)
+# }
 
 output "secretsmanager_secret_name" {
   description = "secrets manager for stored eks application secret"

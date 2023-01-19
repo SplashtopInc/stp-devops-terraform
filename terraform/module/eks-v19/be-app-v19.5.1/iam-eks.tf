@@ -506,48 +506,48 @@ resource "aws_iam_role_policy_attachment" "elasticfilesystem_access" {
 ## and annotate the Kubernetes service account with the name of the IAM role.
 ## ref: https://docs.aws.amazon.com/eks/latest/userguide/aws-load-balancer-controller.html
 
-## create load-balancer-role-trust-policy.json
-data "aws_iam_policy_document" "load-balancer-role-trust-policy" {
-  statement {
-    actions = ["sts:AssumeRoleWithWebIdentity"]
+# ## create load-balancer-role-trust-policy.json
+# data "aws_iam_policy_document" "load-balancer-role-trust-policy" {
+#   statement {
+#     actions = ["sts:AssumeRoleWithWebIdentity"]
 
-    principals {
-      type        = "Federated"
-      identifiers = ["arn:aws:iam::${local.role_numbers}:oidc-provider/${module.eks.oidc_provider}"]
-    }
-    condition {
-      test     = "StringEquals"
-      variable = "${module.eks.oidc_provider}:sub"
-      values = [
-        "system:serviceaccount:kube-system:aws-load-balancer-controller"
-      ]
-    }
-    condition {
-      test     = "StringEquals"
-      variable = "${module.eks.oidc_provider}:aud"
-      values = [
-        "sts.amazonaws.com"
-      ]
-    }
+#     principals {
+#       type        = "Federated"
+#       identifiers = ["arn:aws:iam::${local.role_numbers}:oidc-provider/${module.eks.oidc_provider}"]
+#     }
+#     condition {
+#       test     = "StringEquals"
+#       variable = "${module.eks.oidc_provider}:sub"
+#       values = [
+#         "system:serviceaccount:kube-system:aws-load-balancer-controller"
+#       ]
+#     }
+#     condition {
+#       test     = "StringEquals"
+#       variable = "${module.eks.oidc_provider}:aud"
+#       values = [
+#         "sts.amazonaws.com"
+#       ]
+#     }
 
-  }
-  depends_on = [module.eks]
-}
+#   }
+#   depends_on = [module.eks]
+# }
 
-## Create an IAM role and attachment load-balancer-role-trust-policy.json
+# ## Create an IAM role and attachment load-balancer-role-trust-policy.json
 
-resource "aws_iam_role" "aws-lb-controller-role" {
-  count              = var.create ? 1 : 0
-  name               = "${local.name}-aws-lb-controller-role"
-  assume_role_policy = data.aws_iam_policy_document.load-balancer-role-trust-policy.json
-  depends_on         = [module.eks]
-}
+# resource "aws_iam_role" "aws-lb-controller-role" {
+#   count              = var.create ? 1 : 0
+#   name               = "${local.name}-aws-lb-controller-role"
+#   assume_role_policy = data.aws_iam_policy_document.load-balancer-role-trust-policy.json
+#   depends_on         = [module.eks]
+# }
 
-# ## attachment IAM policy for the AWS Load Balancer Controller
+# # ## attachment IAM policy for the AWS Load Balancer Controller
 
-resource "aws_iam_role_policy_attachment" "aws-lb-controller-attachment" {
-  count      = var.create ? 1 : 0
-  role       = aws_iam_role.aws-lb-controller-role[0].name
-  policy_arn = aws_iam_policy.alb_ingress[0].arn
-  depends_on = [module.eks]
-}
+# resource "aws_iam_role_policy_attachment" "aws-lb-controller-attachment" {
+#   count      = var.create ? 1 : 0
+#   role       = aws_iam_role.aws-lb-controller-role[0].name
+#   policy_arn = aws_iam_policy.alb_ingress[0].arn
+#   depends_on = [module.eks]
+# }
