@@ -555,10 +555,10 @@ locals {
   secretsmanager_eks_name        = var.create ? "${var.environment}/data/eks/${local.app_cluster_name}" : ""
   secretsmanager_eks_description = "Vault secrets for ${local.app_cluster_name} eks"
   secretsmanager_json = {
-    "cluster_id"                                = "${module.eks.cluster_id}",
-    "cluster_endpoint"                          = "${module.eks.cluster_endpoint}",
-    "decode_cluster_certificate_authority_data" = "${base64decode(module.eks.cluster_certificate_authority_data)}",
-    "secretsmanager_secret_name"                = "${local.secretsmanager_name}"
+    "cluster_id"       = "${module.eks.cluster_id}",
+    "cluster_endpoint" = "${module.eks.cluster_endpoint}",
+    # "decode_cluster_certificate_authority_data" = "${base64decode(module.eks.cluster_certificate_authority_data)}",
+    "secretsmanager_secret_name" = "${local.secretsmanager_name}"
   }
 }
 #tfsec:ignore:aws-ssm-secret-use-customer-key
