@@ -120,6 +120,8 @@ module "eks" {
         # extra args added
         [settings.kernel]
         lockdown = "integrity"
+        [settings.kubernetes.node-labels]
+        app = "runner"
         # [settings.kubernetes.node-taints]
         # dedicated = "experimental:PreferNoSchedule"
         # special = "true:NoSchedule"
@@ -220,6 +222,8 @@ module "eks" {
         # extra args added
         [settings.kernel]
         lockdown = "integrity"
+        [settings.kubernetes.node-labels]
+        app = "sonarqube"
         [settings.kubernetes.node-taints]
         sonarqube = "true:NoSchedule"
       EOT
