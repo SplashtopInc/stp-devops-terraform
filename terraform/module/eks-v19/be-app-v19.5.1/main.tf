@@ -5,8 +5,60 @@ resource "random_string" "suffix" {
   special = false
 }
 
+provider "kubernetes" {
+  host                   = module.eks.cluster_endpoint
+  cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
+
+  exec {
+    api_version = "client.authentication.k8s.io/v1beta1"
+    command     = "aws"
+    # This requires the awscli to be installed locally where Terraform is executed
+    args = ["eks", "get-token", "--cluster-name", module.eks.cluster_name]
+  }
+}
+
+################################################################################
+# get data info
+################################################################################
+data "aws_caller_identity" "current" {}
+data "aws_availability_zones" "available" {}
+### get ami info
+data "aws_ami" "beapp_node_ami" {
+  most_recent = true
+  owners      = [local.worker_ami_owner_id]
+
+  filter {
+    name   = "name"
+    values = [local.worker_ami_linux]
+  }
+}
+### get vpc info
+data "aws_vpc" "stp-vpc-pub" {
+  tags = {
+    Name = "stp-vpc-pub-${var.region}"
+  }
+}
+
+data "aws_subnets" "stp-vpc-pub-private" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.stp-vpc-pub.id]
+  }
+
+  filter {
+    name = "tag:Name"
+    values = [
+      "stp-vpc-pub-private-${var.region}*"
+    ]
+  }
+}
+
+################################################################################
+# local
+################################################################################
+
+
 locals {
-  # substr(string, offset, length)
   cluster_name_project = lower(var.project)
   cluster_name_region  = join("", [substr(replace(var.region, "-", ""), 0, 3), regex("\\d$", var.region)])
   cluster_name_env     = substr(var.environment, 0, 4)
@@ -17,9 +69,13 @@ locals {
 
   name            = local.app_cluster_name
   cluster_version = var.cluster_version
-  region          = var.region
-  profile         = var.profile
-  role_numbers    = regex("[0-9]+", var.aws_assume_role)
+
+  region  = var.region
+  profile = var.profile
+
+  azs = slice(data.aws_availability_zones.available.names, 0, 3)
+
+  role_numbers = data.aws_caller_identity.current.account_id
 
   tags = {
     Project     = var.project
@@ -62,8 +118,8 @@ module "eks" {
   version = "19.5.1"
 
   create                          = var.create
-  cluster_name                    = local.name
-  cluster_version                 = local.cluster_version
+  cluster_name                    = var.cluster_name != "" ? var.cluster_name : local.name
+  cluster_version                 = var.cluster_version
   cluster_endpoint_private_access = true
   cluster_endpoint_public_access  = true
 
@@ -73,30 +129,38 @@ module "eks" {
   cloudwatch_log_group_retention_in_days = var.cloudwatch_log_group_retention_in_days
 
   cluster_addons = {
-    preserve    = true
-    most_recent = true
-
-    timeouts = {
-      create = "25m"
-      delete = "10m"
+    coredns = {
+      most_recent = true
     }
-    coredns    = {}
-    kube-proxy = {}
-    vpc-cni    = {}
+    kube-proxy = {
+      most_recent = true
+    }
+    vpc-cni = {
+      most_recent = true
+    }
   }
 
-  cluster_encryption_config = {
-    provider_key_arn = var.create ? aws_kms_key.eks[0].arn : null
-    rresources       = ["secrets"]
-  }
+  # create_kms_key            = false
+  # cluster_encryption_config = {
+  #   provider_key_arn = var.create ? aws_kms_key.eks[0].arn : null
+  #   resources        = ["secrets"]
+  # }
 
   vpc_id                    = local.vpc_id
   subnet_ids                = local.subnet_ids
   cluster_service_ipv4_cidr = var.cluster_service_ipv4_cidr
 
-  self_managed_node_group_defaults = {
-    create_security_group = false
+  # Self managed node groups will not automatically create the aws-auth configmap so we need to
+  # create_aws_auth_configmap = true
+  # manage_aws_auth_configmap = true
 
+  # aws-auth configmap
+  # https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/main.tf#L471
+  # aws_auth_roles = var.aws_auth_roles
+  # aws_auth_users = var.aws_auth_users
+  # aws_auth_accounts = var.aws_auth_accounts
+
+  self_managed_node_group_defaults = {
     # enable discovery of autoscaling groups by cluster-autoscaler
     autoscaling_group_tags = {
       "k8s.io/cluster-autoscaler/enabled" : true,
@@ -109,11 +173,13 @@ module "eks" {
   # https://github.com/terraform-aws-modules/terraform-aws-eks/issues/897
 
   self_managed_node_groups = {
+    # Default node group - as provisioned by the module defaults
+    # default_node_group = {}
+
     ## api node group
     api = {
       name            = format("%s-self-mng", local.api_name)
       use_name_prefix = false
-      platform        = var.platform
 
       subnet_ids = local.subnet_ids
 
@@ -125,12 +191,12 @@ module "eks" {
       bootstrap_extra_args = local.be_api_kubelet_args
 
       # pre_bootstrap_user_data = <<-EOT
-      # export CONTAINER_RUNTIME="containerd"
-      # export USE_MAX_PODS=false
+      #   export CONTAINER_RUNTIME="containerd"
+      #   export USE_MAX_PODS=false
       # EOT
 
       # post_bootstrap_user_data = <<-EOT
-      # echo "you are free little kubelet!"
+      #   echo "you are free little kubelet!"
       # EOT
 
       ebs_optimized     = true
@@ -145,7 +211,7 @@ module "eks" {
             iops        = 3000
             throughput  = 150
             # encrypted             = true
-            # kms_key_id            = var.create ? aws_kms_key.ebs[0].arn : null
+            # kms_key_id            = module.ebs_kms_key.key_id
             delete_on_termination = true
           }
         }
@@ -171,6 +237,14 @@ module "eks" {
         instance_metadata_tags      = "disabled"
       }
 
+      create_iam_role          = true
+      iam_role_name            = format("%s-api-self-mng", local.app_cluster_name)
+      iam_role_use_name_prefix = false
+      iam_role_description     = "api self managed node group role"
+      iam_role_tags = {
+        Purpose = "Protector of the kubelet"
+      }
+
       iam_role_additional_policies = {
         additional_1 = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
         additional_2 = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
@@ -194,7 +268,6 @@ module "eks" {
     my = {
       name            = format("%s-self-mng", local.my_name)
       use_name_prefix = false
-      platform        = var.platform
 
       subnet_ids = local.subnet_ids
 
@@ -252,6 +325,14 @@ module "eks" {
         instance_metadata_tags      = "disabled"
       }
 
+      create_iam_role          = true
+      iam_role_name            = format("%s-my-self-mng", local.app_cluster_name)
+      iam_role_use_name_prefix = false
+      iam_role_description     = "my self managed node group role"
+      iam_role_tags = {
+        Purpose = "Protector of the kubelet"
+      }
+
       iam_role_additional_policies = {
         additional_1 = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
         additional_2 = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
@@ -275,7 +356,6 @@ module "eks" {
     devops = {
       name            = format("%s-self-mng", local.devops_name)
       use_name_prefix = false
-      platform        = var.platform
 
       subnet_ids = local.subnet_ids
 
@@ -333,6 +413,14 @@ module "eks" {
         instance_metadata_tags      = "disabled"
       }
 
+      create_iam_role          = true
+      iam_role_name            = format("%s-devops-self-mng", local.app_cluster_name)
+      iam_role_use_name_prefix = false
+      iam_role_description     = "devops self managed node group role"
+      iam_role_tags = {
+        Purpose = "Protector of the kubelet"
+      }
+
       iam_role_additional_policies = {
         additional_1 = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
         additional_2 = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
@@ -356,6 +444,11 @@ module "eks" {
 
   tags = local.tags
 }
+
+################################################################################
+# Supporting Resources
+################################################################################
+
 
 ################################################################################
 # aws-auth configmap
@@ -445,89 +538,6 @@ resource "null_resource" "apply" {
     command = self.triggers.cmd_patch
   }
 }
-
-################################################################################
-# Supporting Resources
-################################################################################
-#tfsec:ignore:aws-kms-auto-rotate-keys:skip key rotate
-resource "aws_kms_key" "eks" {
-  #checkov:skip=CKV_AWS_7:sikp
-  #ts:skip=AC_AWS_0160 skip key rotate
-  count                   = var.create ? 1 : 0
-  description             = "EKS Secret Encryption Key"
-  deletion_window_in_days = 7
-  enable_key_rotation     = false
-
-  tags = local.tags
-}
-
-# #tfsec:ignore:aws-kms-auto-rotate-keys:skip key rotate
-# resource "aws_kms_key" "ebs" {
-#   #checkov:skip=CKV_AWS_7:sikp
-#   #ts:skip=AC_AWS_0160 skip key rotate
-#   count                   = var.create ? 1 : 0
-#   description             = "Customer managed key to encrypt self managed node group volumes"
-#   deletion_window_in_days = 7
-#   policy                  = data.aws_iam_policy_document.ebs.json
-# }
-
-# # This policy is required for the KMS key used for EKS root volumes, so the cluster is allowed to enc/dec/attach encrypted EBS volumes
-# data "aws_iam_policy_document" "ebs" {
-#   #checkov:skip=CKV_AWS_111:sikp
-#   #checkov:skip=CKV_AWS_109:sikp
-#   # Copy of default KMS policy that lets you manage it
-#   statement {
-#     sid       = "Enable IAM User Permissions"
-#     actions   = ["kms:*"]
-#     resources = ["*"]
-
-#     principals {
-#       type        = "AWS"
-#       identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
-#     }
-#   }
-
-#   # Required for EKS
-#   statement {
-#     sid = "Allow service-linked role use of the CMK"
-#     actions = [
-#       "kms:Encrypt",
-#       "kms:Decrypt",
-#       "kms:ReEncrypt*",
-#       "kms:GenerateDataKey*",
-#       "kms:DescribeKey"
-#     ]
-#     resources = ["*"]
-
-#     principals {
-#       type = "AWS"
-#       identifiers = [
-#         "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling", # required for the ASG to manage encrypted volumes for nodes
-#         module.eks.cluster_iam_role_arn,                                                                                                            # required for the cluster / persistentvolume-controller to create encrypted PVCs
-#       ]
-#     }
-#   }
-
-#   statement {
-#     sid       = "Allow attachment of persistent resources"
-#     actions   = ["kms:CreateGrant"]
-#     resources = ["*"]
-
-#     principals {
-#       type = "AWS"
-#       identifiers = [
-#         "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling", # required for the ASG to manage encrypted volumes for nodes
-#         module.eks.cluster_iam_role_arn,                                                                                                            # required for the cluster / persistentvolume-controller to create encrypted PVCs
-#       ]
-#     }
-
-#     condition {
-#       test     = "Bool"
-#       variable = "kms:GrantIsForAWSResource"
-#       values   = ["true"]
-#     }
-#   }
-# }
 ################################################################################
 # Secret Manager Module
 ################################################################################
@@ -555,10 +565,13 @@ locals {
   secretsmanager_eks_name        = var.create ? "${var.environment}/data/eks/${local.app_cluster_name}" : ""
   secretsmanager_eks_description = "Vault secrets for ${local.app_cluster_name} eks"
   secretsmanager_json = {
-    "cluster_id"       = "${module.eks.cluster_id}",
-    "cluster_endpoint" = "${module.eks.cluster_endpoint}",
-    # "decode_cluster_certificate_authority_data" = "${base64decode(module.eks.cluster_certificate_authority_data)}",
-    "secretsmanager_secret_name" = "${local.secretsmanager_name}"
+    "cluster_name" = "${module.eks.cluster_name}",
+    ##"The ID of the EKS cluster. Note: currently a value is returned only for local EKS clusters created on Outposts"
+    ## use module.eks.cluster_name instead of module.eks.cluster_id
+    "cluster_id"                                = "${module.eks.cluster_name}",
+    "cluster_endpoint"                          = "${module.eks.cluster_endpoint}",
+    "decode_cluster_certificate_authority_data" = "${base64decode(module.eks.cluster_certificate_authority_data)}",
+    "secretsmanager_secret_name"                = "${local.secretsmanager_name}"
   }
 }
 #tfsec:ignore:aws-ssm-secret-use-customer-key
@@ -576,6 +589,4 @@ resource "aws_secretsmanager_secret_version" "eks" {
   count         = var.create ? 1 : 0
   secret_id     = resource.aws_secretsmanager_secret.eks[0].id
   secret_string = jsonencode(local.secretsmanager_json)
-  depends_on    = [module.eks]
 }
-
