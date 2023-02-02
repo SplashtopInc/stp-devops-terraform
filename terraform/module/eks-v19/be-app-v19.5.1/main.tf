@@ -140,12 +140,6 @@ module "eks" {
     }
   }
 
-  # create_kms_key            = false
-  # cluster_encryption_config = {
-  #   provider_key_arn = var.create ? aws_kms_key.eks[0].arn : null
-  #   resources        = ["secrets"]
-  # }
-
   vpc_id                    = local.vpc_id
   subnet_ids                = local.subnet_ids
   cluster_service_ipv4_cidr = var.cluster_service_ipv4_cidr
@@ -199,6 +193,8 @@ module "eks" {
       #   echo "you are free little kubelet!"
       # EOT
 
+      # key_name      = module.key_pair.key_pair_name
+
       ebs_optimized     = true
       enable_monitoring = true
 
@@ -206,12 +202,10 @@ module "eks" {
         xvda = {
           device_name = "/dev/xvda"
           ebs = {
-            volume_size = 50
-            volume_type = "gp3"
-            iops        = 3000
-            throughput  = 150
-            # encrypted             = true
-            # kms_key_id            = module.ebs_kms_key.key_id
+            volume_size           = 50
+            volume_type           = "gp3"
+            iops                  = 3000
+            throughput            = 150
             delete_on_termination = true
           }
         }
@@ -294,12 +288,10 @@ module "eks" {
         xvda = {
           device_name = "/dev/xvda"
           ebs = {
-            volume_size = 50
-            volume_type = "gp3"
-            iops        = 3000
-            throughput  = 150
-            # encrypted             = true
-            # kms_key_id            = var.create ? aws_kms_key.ebs[0].arn : null
+            volume_size           = 50
+            volume_type           = "gp3"
+            iops                  = 3000
+            throughput            = 150
             delete_on_termination = true
           }
         }
@@ -382,12 +374,10 @@ module "eks" {
         xvda = {
           device_name = "/dev/xvda"
           ebs = {
-            volume_size = 50
-            volume_type = "gp3"
-            iops        = 3000
-            throughput  = 150
-            # encrypted             = true
-            # kms_key_id            = var.create ? aws_kms_key.ebs[0].arn : null
+            volume_size           = 50
+            volume_type           = "gp3"
+            iops                  = 3000
+            throughput            = 150
             delete_on_termination = true
           }
         }
