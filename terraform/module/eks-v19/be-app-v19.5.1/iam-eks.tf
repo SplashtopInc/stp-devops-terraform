@@ -506,8 +506,8 @@ resource "aws_iam_role_policy_attachment" "elasticfilesystem_access" {
 # and annotate the Kubernetes service account with the name of the IAM role.
 # ref: https://docs.aws.amazon.com/eks/latest/userguide/aws-load-balancer-controller.html
 
-## create load-balancer-role-trust-policy.json
-data "aws_iam_policy_document" "load-balancer-role-trust-policy" {
+## create k8s_aws_lb_controller_trust.json
+data "aws_iam_policy_document" "k8s_aws_lb_controller_trust" {
   statement {
     actions = ["sts:AssumeRoleWithWebIdentity"]
 
@@ -534,27 +534,29 @@ data "aws_iam_policy_document" "load-balancer-role-trust-policy" {
   depends_on = [module.eks]
 }
 
-## Create an IAM role and attachment load-balancer-role-trust-policy.json
+## Create an IAM role with policy
 
-resource "aws_iam_role" "aws-lb-controller-role" {
-  count              = var.create ? 1 : 0
-  name               = "${local.name}-aws-lb-role"
-  assume_role_policy = data.aws_iam_policy_document.load-balancer-role-trust-policy.json
-  depends_on         = [module.eks]
-}
+resource "aws_iam_role" "k8s_aws_lb_controller_trust_role" {
+  count = var.create ? 1 : 0
+  name  = "${local.name}-k8s_aws_lb_role"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Sid    = "1"
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+      }
+    ]
+  })
 
-resource "aws_iam_policy" "aws_lb_controller_access" {
-  count  = var.create ? 1 : 0
-  name   = "${local.name}-aws_lb_controller_access"
-  path   = "/"
-  policy = data.aws_iam_policy_document.load-balancer-role-trust-policy.json
-}
+  inline_policy {
+    name   = "k8s_aws_lb_controller_trust_policy"
+    policy = data.aws_iam_policy_document.k8s_aws_lb_controller_trust.json
+  }
 
-# ## attachment IAM policy for the AWS Load Balancer Controller
-
-resource "aws_iam_role_policy_attachment" "aws-lb-controller-attachment" {
-  count      = var.create ? 1 : 0
-  role       = aws_iam_role.aws-lb-controller-role[0].name
-  policy_arn = aws_iam_policy.alb_ingress[0].arn
   depends_on = [module.eks]
 }
