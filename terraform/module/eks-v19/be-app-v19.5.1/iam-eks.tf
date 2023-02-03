@@ -507,7 +507,7 @@ resource "aws_iam_role_policy_attachment" "elasticfilesystem_access" {
 # ref: https://docs.aws.amazon.com/eks/latest/userguide/aws-load-balancer-controller.html
 
 ## create k8s_aws_lb_controller_trust.json
-data "aws_iam_policy_document" "k8s_aws_lb_controller_trust" {
+data "aws_iam_policy_document" "load_balancer_role_trust_policy" {
   statement {
     actions = ["sts:AssumeRoleWithWebIdentity"]
 
@@ -536,36 +536,17 @@ data "aws_iam_policy_document" "k8s_aws_lb_controller_trust" {
 
 ## Create an IAM role with policy
 
-data "aws_iam_policy_document" "instance_assume_role_policy" {
-  statement {
-    actions = ["sts:AssumeRole"]
-
-    principals {
-      type        = "Service"
-      identifiers = ["ec2.amazonaws.com"]
-    }
-  }
-}
-
-resource "aws_iam_role" "k8s_aws_lb_controller_trust_role" {
+resource "aws_iam_role" "aws_eks_lb_controller_role" {
   count              = var.create ? 1 : 0
-  name               = "${local.name}-k8s_aws_lb_role"
-  assume_role_policy = data.aws_iam_policy_document.instance_assume_role_policy.json
-
-  # depends_on = [module.eks]
-}
-
-resource "aws_iam_policy" "k8s_aws_lb_controller_trust_policy" {
-  count  = var.create ? 1 : 0
-  name   = "k8s_aws_lb_controller_trust_policy"
-  policy = data.aws_iam_policy_document.k8s_aws_lb_controller_trust.json
-
-  depends_on = [module.eks]
+  name               = "${local.name}-aws_eks_lb_controller_role"
+  assume_role_policy = data.aws_iam_policy_document.load_balancer_role_trust_policy.json
+  depends_on         = [module.eks]
 }
 
 resource "aws_iam_role_policy_attachment" "k8s_aws_lb_controller" {
-  role       = aws_iam_role.k8s_aws_lb_controller_trust_role[0].name
-  policy_arn = aws_iam_policy.k8s_aws_lb_controller_trust_policy[0].arn
-
+  count = var.create ? 1 : 0
+  role  = aws_iam_role.aws_eks_lb_controller_role[0].name
+  ## https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.4.4/docs/install/iam_policy.json
+  policy_arn = aws_iam_policy.alb_ingress[0].arn
   depends_on = [module.eks]
 }
