@@ -82,7 +82,7 @@ variable "rds_secretsmanager_name" {
 
 variable "aes_128_default_key" {
   type        = string
-  default     = "c3a272c39247c29265c2b5c2ad44c3b5"
+  default     = ""
   description = "AES key"
 }
 

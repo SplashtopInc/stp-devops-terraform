@@ -83,7 +83,7 @@ resource "aws_elasticache_replication_group" "redis-replica-group" {
 ################################################################################
 
 locals {
-  secretsmanager_name        = var.enabled ? "${var.environment}/data/elasticache/${local.cluster_name_suffix}" : ""
+  secretsmanager_name        = var.enabled ? "cicd/${var.environment}/data/elasticache/${local.cluster_name_suffix}" : ""
   secretsmanager_description = "Vault secrets for ${local.cluster_name_suffix} elasticache"
   secretsmanager_json = {
     "REDIS_MASTER_URL"    = "${local.master_redis_url}",

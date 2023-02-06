@@ -323,7 +323,7 @@ POLICY
 ################################################################################
 
 locals {
-  secretsmanager_name        = var.enabled ? "${var.environment}/data/sqs/${var.aws_account_name}" : ""
+  secretsmanager_name        = var.enabled ? "cicd/${var.environment}/data/sqs/${var.aws_account_name}" : ""
   secretsmanager_description = "Vault secrets for sqs"
   secretsmanager_json = {
     "src-command" = "https://sqs.${var.region}.amazonaws.com/${data.aws_caller_identity.current.account_id}/src-command-queue"

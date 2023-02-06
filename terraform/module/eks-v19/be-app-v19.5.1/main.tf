@@ -533,7 +533,7 @@ resource "null_resource" "apply" {
 ################################################################################
 
 locals {
-  secretsmanager_name        = var.create ? "${var.environment}/data/${var.aws_account_name}/${local.app_cluster_name}/${local.api_name}" : ""
+  secretsmanager_name        = var.create ? "cicd/${var.environment}/data/${var.aws_account_name}/${local.app_cluster_name}/${local.api_name}" : ""
   secretsmanager_description = "Vault secrets for ${local.app_cluster_name} be-app"
 }
 #tfsec:ignore:aws-ssm-secret-use-customer-key
@@ -552,7 +552,7 @@ resource "aws_secretsmanager_secret" "this" {
 ################################################################################
 
 locals {
-  secretsmanager_eks_name        = var.create ? "${var.environment}/data/eks/${local.app_cluster_name}" : ""
+  secretsmanager_eks_name        = var.create ? "cicd/${var.environment}/data/eks/${local.app_cluster_name}" : ""
   secretsmanager_eks_description = "Vault secrets for ${local.app_cluster_name} eks"
   secretsmanager_json = {
     "cluster_name" = "${module.eks.cluster_name}",

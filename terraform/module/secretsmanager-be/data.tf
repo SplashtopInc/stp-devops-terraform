@@ -4,6 +4,7 @@ data "aws_secretsmanager_secret" "name" {
   name = var.secretsmanager_secret_name
 }
 
+# #########################################
 ### get secret from sqs secret manager
 data "aws_secretsmanager_secret" "sqs" {
   name = var.sqs_secretsmanager_name
