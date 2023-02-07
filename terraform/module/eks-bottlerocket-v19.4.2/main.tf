@@ -81,6 +81,12 @@ module "eks" {
   # aws_auth_users    = var.aws_auth_users
   # aws_auth_accounts = var.aws_auth_accounts
 
+  ################################################################################
+  # IAM Role
+  ################################################################################
+
+  iam_role_name            = var.cluster_name != "" ? var.cluster_name : local.name
+  iam_role_use_name_prefix = false
 
   self_managed_node_group_defaults = {
     # enable discovery of autoscaling groups by cluster-autoscaler
