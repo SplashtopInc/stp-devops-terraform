@@ -427,3 +427,36 @@ resource "null_resource" "apply" {
     command = self.triggers.cmd_patch
   }
 }
+
+################################################################################
+# Secret Manager Module for eks output
+################################################################################
+
+locals {
+  secretsmanager_eks_name        = var.create ? "cicd/${var.environment}/data/eks/${local.name}" : ""
+  secretsmanager_eks_description = "Vault secrets for ${local.name} eks"
+  secretsmanager_json = {
+    "cluster_name" = "${module.eks.cluster_name}",
+    ##"The ID of the EKS cluster. Note: currently a value is returned only for local EKS clusters created on Outposts"
+    ## use module.eks.cluster_name instead of module.eks.cluster_id
+    "cluster_id"                                = "${module.eks.cluster_name}",
+    "cluster_endpoint"                          = "${module.eks.cluster_endpoint}",
+    "decode_cluster_certificate_authority_data" = "${base64decode(module.eks.cluster_certificate_authority_data)}"
+  }
+}
+#tfsec:ignore:aws-ssm-secret-use-customer-key
+resource "aws_secretsmanager_secret" "eks" {
+  #checkov:skip=CKV_AWS_149: not use KMS key
+  #ts:skip=AWS.AKK.DP.HIGH.0012 skip
+  #ts:skip=AWS.SecretsManagerSecret.DP.MEDIUM.0036 skip
+  count                   = var.create ? 1 : 0
+  name                    = local.secretsmanager_eks_name
+  description             = local.secretsmanager_eks_description
+  recovery_window_in_days = 7
+}
+
+resource "aws_secretsmanager_secret_version" "eks" {
+  count         = var.create ? 1 : 0
+  secret_id     = resource.aws_secretsmanager_secret.eks[0].id
+  secret_string = jsonencode(local.secretsmanager_json)
+}
