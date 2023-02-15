@@ -154,7 +154,17 @@ module "eks" {
         xvda = {
           device_name = "/dev/xvda"
           ebs = {
-            volume_size           = 200
+            volume_size           = 100
+            volume_type           = "gp3"
+            iops                  = 3000
+            throughput            = 150
+            delete_on_termination = true
+          }
+        }
+        xvdb = {
+          device_name = "/dev/xvdb"
+          ebs = {
+            volume_size           = 100
             volume_type           = "gp3"
             iops                  = 3000
             throughput            = 150
