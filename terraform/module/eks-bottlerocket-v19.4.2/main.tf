@@ -322,6 +322,125 @@ module "eks" {
 
       tags = {}
     }
+
+    # influx db for k6
+    influxdb = {
+      name   = "influxdb-self-mng"
+      ami_id = data.aws_ami.eks_default_bottlerocket.id
+
+      platform = "bottlerocket"
+
+      subnet_ids = var.subnet_ids
+
+      max_size     = 2
+      min_size     = 1
+      desired_size = 1
+
+      bootstrap_extra_args = <<-EOT
+        # The admin host container provides SSH access and runs with "superpowers".
+        # It is disabled by default, but can be disabled explicitly.
+        [settings.host-containers.admin]
+        enabled = false
+        # The control host container provides out-of-band access via SSM.
+        # It is enabled by default, and can be disabled if you do not expect to use SSM.
+        # This could leave you with no way to access the API and change settings on an existing node!
+        [settings.host-containers.control]
+        enabled = true
+        # extra args added
+        [settings.kernel]
+        lockdown = "integrity"
+        [settings.kubernetes.node-labels]
+        app = "influxdb"
+        influxdb = "true"
+        [settings.kubernetes.node-taints]
+        influxdb = "true:NoSchedule"
+      EOT
+
+      # pre_bootstrap_user_data = <<-EOT
+      #   export CONTAINER_RUNTIME="containerd"
+      #   export USE_MAX_PODS=false
+      # EOT
+
+      # post_bootstrap_user_data = <<-EOT
+      #   echo "you are free little kubelet!"
+      # EOT
+
+      launch_template_name            = "self-managed-influxdb"
+      launch_template_use_name_prefix = true
+      launch_template_description     = "Self managed node group influxdb launch template"
+
+      ebs_optimized     = true
+      enable_monitoring = true
+
+      block_device_mappings = {
+        xvda = {
+          device_name = "/dev/xvda"
+          ebs = {
+            volume_size           = 50
+            volume_type           = "gp3"
+            iops                  = 3000
+            throughput            = 150
+            delete_on_termination = true
+          }
+        }
+      }
+
+      use_mixed_instances_policy = true
+      mixed_instances_policy = {
+        instances_distribution = {
+          on_demand_base_capacity                  = 0
+          on_demand_percentage_above_base_capacity = 100
+          # Valid values: lowest-price, capacity-optimized, capacity-optimized-prioritized
+          spot_allocation_strategy = "capacity-optimized"
+          // 0 for all (only for "lowest-price"), default 10
+          spot_instance_pools = 0
+        }
+        override = [
+          {
+            instance_type     = "t3a.medium"
+            weighted_capacity = "1"
+          },
+          {
+            instance_type     = "t3.medium"
+            weighted_capacity = "2"
+          },
+        ]
+      }
+
+      metadata_options = {
+        http_endpoint               = "enabled"
+        http_tokens                 = "required"
+        http_put_response_hop_limit = 2
+        instance_metadata_tags      = "disabled"
+      }
+
+      # capacity_reservation_specification = {
+      #   capacity_reservation_target = {
+      #     capacity_reservation_id = aws_ec2_capacity_reservation.targeted.id
+      #   }
+      # }
+
+      create_iam_role          = false
+      iam_role_name            = "${local.name}-influxdb"
+      iam_role_use_name_prefix = false
+      iam_role_description     = "Self managed node group influxdb role"
+      iam_role_tags = {
+        Purpose = "Protector of the influxdb group"
+      }
+      iam_role_additional_policies = {
+        additional_1 = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+        additional_2 = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
+        additional_3 = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+      }
+
+      timeouts = {
+        create = "80m"
+        update = "80m"
+        delete = "80m"
+      }
+
+      tags = {}
+    }
   }
 
   tags = local.tags
