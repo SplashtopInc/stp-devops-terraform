@@ -7,7 +7,7 @@ resource "random_string" "suffix" {
 
 provider "kubernetes" {
   host                   = module.eks.cluster_endpoint
-  cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
+  cluster_ca_certificate = base64decode(data.aws_eks_cluster.this[0].certificate_authority[0].data)
 
   exec {
     api_version = "client.authentication.k8s.io/v1beta1"
@@ -560,7 +560,7 @@ locals {
     ## use module.eks.cluster_name instead of module.eks.cluster_id
     "cluster_id"                                = "${module.eks.cluster_name}",
     "cluster_endpoint"                          = "${module.eks.cluster_endpoint}",
-    "decode_cluster_certificate_authority_data" = "${base64decode(module.eks.cluster_certificate_authority_data)}",
+    "decode_cluster_certificate_authority_data" = "${base64decode(data.aws_eks_cluster.this[0].certificate_authority[0].data)}",
     "secretsmanager_secret_name"                = "${local.secretsmanager_name}"
   }
 }
