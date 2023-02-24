@@ -13,13 +13,14 @@ provider "kubernetes" {
     api_version = "client.authentication.k8s.io/v1beta1"
     command     = "aws"
     # This requires the awscli to be installed locally where Terraform is executed
-    args = ["eks", "get-token", "--cluster-name", data.aws_eks_cluster.this[0].name]
+    args = ["eks", "get-token", "--cluster-name", data.aws_eks_clusters.be_app.names]
   }
 }
 
 ################################################################################
 # get data info
 ################################################################################
+data "aws_eks_clusters" "be_app" {}
 data "aws_caller_identity" "current" {}
 data "aws_availability_zones" "available" {}
 ### get ami info
