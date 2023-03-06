@@ -513,18 +513,18 @@ data "aws_iam_policy_document" "load_balancer_role_trust_policy" {
 
     principals {
       type        = "Federated"
-      identifiers = ["arn:aws:iam::${local.role_numbers}:oidc-provider/${data.aws_eks_cluster.this.identity.oidc.issuer}"]
+      identifiers = ["arn:aws:iam::${local.role_numbers}:oidc-provider/${data.aws_eks_cluster.this[0].identity.oidc.issuer}"]
     }
     condition {
       test     = "StringEquals"
-      variable = "${data.aws_eks_cluster.this.identity.oidc.issuer}:sub"
+      variable = "${data.aws_eks_cluster.this[0].identity.oidc.issuer}:sub"
       values = [
         "system:serviceaccount:kube-system:aws-load-balancer-controller"
       ]
     }
     condition {
       test     = "StringEquals"
-      variable = "${data.aws_eks_cluster.this.identity.oidc.issuer}:aud"
+      variable = "${data.aws_eks_cluster.this[0].identity.oidc.issuer}:aud"
       values = [
         "sts.amazonaws.com"
       ]
