@@ -48,11 +48,11 @@ locals {
     #LOG_RDS
     "LOG_RDS_DATABASE"      = "${var.log_rds_database}",
     #"LOG_RDS_HOST"          = "${local.db2_writer_endpoint}",
-    "LOG_RDS_HOST"          = "${local.db2_writer_endpoint == "null" ? local.db1_writer_endpoint : local.db2_writer_endpoint}",
+    "LOG_RDS_HOST"          = "${local.db2_writer_endpoint == "" ? local.db1_writer_endpoint : local.db2_writer_endpoint}",
     "LOG_RDS_PASSWORD"      = "${var.log_rds_password}",
     "LOG_RDS_USER"          = "${var.log_rds_user}",
     #"LOG_READONLY_RDS_HOST" = "${local.db2_reader_endpoint}",
-    "LOG_READONLY_RDS_HOST" = "${local.db2_reader_endpoint == "null" ? local.db1_reader_endpoint : local.db2_reader_endpoint}",
+    "LOG_READONLY_RDS_HOST" = "${local.db2_reader_endpoint == "" ? local.db1_reader_endpoint : local.db2_reader_endpoint}",
     #MS_TEAMS
     "MS_TEAMS_APP_ID"       = "",
     "MS_TEAMS_BOT_ID"       = "",
