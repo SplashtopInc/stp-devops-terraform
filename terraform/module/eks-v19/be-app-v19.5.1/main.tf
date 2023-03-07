@@ -447,13 +447,13 @@ module "eks" {
 ################################################################################
 
 data "aws_eks_cluster_auth" "this" {
-  #count = var.create ? 1 : 0
+  count = var.create ? 1 : 0
   #name  = module.eks.cluster_name
   name = var.cluster_name == null ? module.eks.cluster_name : var.cluster_name
 }
 
 data "aws_eks_cluster" "this" {
-  #count = var.create ? 1 : 0
+  count = var.create ? 1 : 0
   #name  = module.eks.cluster_name
   name = var.cluster_name == null ? module.eks.cluster_name : var.cluster_name
 }
