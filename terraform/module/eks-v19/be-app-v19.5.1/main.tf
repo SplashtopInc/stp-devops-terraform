@@ -453,7 +453,7 @@ data "aws_eks_cluster_auth" "this" {
 }
 
 data "aws_eks_cluster" "this" {
-  count = var.create ? 1 : 0
+  #count = var.create ? 1 : 0
   #name  = module.eks.cluster_name
   name = var.cluster_name == null ? module.eks.cluster_name : var.cluster_name
 }
@@ -488,7 +488,7 @@ locals {
   template_vars = var.create ? {
     cluster_name     = module.eks.cluster_name
     cluster_endpoint = module.eks.cluster_endpoint
-    cluster_ca       = data.aws_eks_cluster.this[0].certificate_authority[0].data
+    cluster_ca       = data.aws_eks_cluster.this.certificate_authority[0].data
     cluster_profile  = var.profile
     cluster_region   = var.region
   } : {}
