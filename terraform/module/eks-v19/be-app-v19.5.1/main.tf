@@ -480,7 +480,7 @@ locals {
     users = [{
       name = "terraform"
       user = {
-        token = data.aws_eks_cluster_auth.this.token
+        token = data.aws_eks_cluster_auth.this[0].token
       }
     }]
   }) : "{}"
@@ -488,7 +488,7 @@ locals {
   template_vars = var.create ? {
     cluster_name     = module.eks.cluster_name
     cluster_endpoint = module.eks.cluster_endpoint
-    cluster_ca       = data.aws_eks_cluster.this.certificate_authority[0].data
+    cluster_ca       = data.aws_eks_cluster.this[0].certificate_authority[0].data
     cluster_profile  = var.profile
     cluster_region   = var.region
   } : {}
