@@ -31,12 +31,12 @@ locals {
     "CLOUD_BUILD_SERVER_URL"           = "http://${var.account_name}-cloudbuilder.internal.${var.account_name}.${var.cloud_build_server_domain}:8080/job/CreateBuild_CSRS/build",
     "CONNECT_SECRET"                   = "${var.connect_secret}",
     "DB_POOL"                          = "${var.db_pool}",
-    "DEFAULT_API_GATEWAY"              = "wss://srcgw-${var.environment}.api.${var.aws_account_name}.${var.cloud_build_server_domain}/be-dev",
+    "DEFAULT_API_GATEWAY"              = "wss://srcgw-${var.environment}.api.${var.account_name}.${var.cloud_build_server_domain}/be-dev",
     "DEPLOY_DOMAIN"                    = "${var.account_name}.${var.cloud_build_server_domain}",
     "DEVISE_SECRET_KEY"                = "${var.devise_secret_key}",
     "ENABLE_SHORYUKEN_INLINE_EXECUTER" = "${var.enable_shoryuken_inline_executer}",
     #GLOBAL_LOOKUP
-    "GLOBAL_LOOKUP_FQDN"      = "https://st-lookup.api.${var.aws_account_name}.${var.global_lookup_domain}/",
+    "GLOBAL_LOOKUP_FQDN"      = "https://st-lookup.api.${var.account_name}.${var.global_lookup_domain}/",
     "GLOBAL_LOOKUP_PORT"      = "${var.global_lookup_port}",
     "GLOBAL_LOOKUP_SWITCH"    = "${var.global_lookup_switch}",
     "GLOBAL_UNIQUE_CHECK"     = "${var.global_unique_check}",
@@ -47,10 +47,10 @@ locals {
     "GOOGLE_RECAPTCHA_PUB_KEY"  = "${var.google_recaptcha_pub_key}",
     #LOG_RDS
     "LOG_RDS_DATABASE"      = "${var.log_rds_database}",
-    "LOG_RDS_HOST"          = "${local.db2_writer_endpoint}",
+    "LOG_RDS_HOST"          = "${local.db2_writer_endpoint == "" ? local.db1_writer_endpoint : local.db2_writer_endpoint}",
     "LOG_RDS_PASSWORD"      = "${var.log_rds_password}",
     "LOG_RDS_USER"          = "${var.log_rds_user}",
-    "LOG_READONLY_RDS_HOST" = "${local.db2_reader_endpoint}",
+    "LOG_READONLY_RDS_HOST" = "${local.db2_reader_endpoint == "" ? local.db1_reader_endpoint : local.db2_reader_endpoint}",
     #MS_TEAMS
     "MS_TEAMS_APP_ID"       = "",
     "MS_TEAMS_BOT_ID"       = "",
