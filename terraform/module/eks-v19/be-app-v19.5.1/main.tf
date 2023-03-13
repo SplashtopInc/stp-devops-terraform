@@ -478,7 +478,7 @@ locals {
     users = [{
       name = "terraform"
       user = {
-        token = data.aws_eks_cluster_auth.this[0].token
+        token = data.aws_eks_cluster_auth.this.token
       }
     }]
   }) : "{}"
