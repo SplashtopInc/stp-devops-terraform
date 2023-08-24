@@ -7,13 +7,13 @@ resource "random_string" "suffix" {
 
 provider "kubernetes" {
   host                   = module.eks.cluster_endpoint
-  cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
+  cluster_ca_certificate = module.eks.cluster_certificate_authority_data
 
   exec {
     api_version = "client.authentication.k8s.io/v1beta1"
     command     = "aws"
     # This requires the awscli to be installed locally where Terraform is executed
-    args = ["eks", "get-token", "--cluster-name", module.eks.cluster_name]
+    args = ["eks", "get-token", "--cluster-name", "${var.cluster_name == null ? module.eks.cluster_name : var.cluster_name}"]
   }
 }
 
@@ -118,7 +118,7 @@ module "eks" {
   version = "19.5.1"
 
   create                          = var.create
-  cluster_name                    = var.cluster_name != "" ? var.cluster_name : local.name
+  cluster_name                    = var.cluster_name == null ? local.name : var.cluster_name
   cluster_version                 = var.cluster_version
   cluster_endpoint_private_access = true
   cluster_endpoint_public_access  = true
@@ -447,13 +447,13 @@ module "eks" {
 ################################################################################
 
 data "aws_eks_cluster_auth" "this" {
-  count = var.create ? 1 : 0
-  name  = module.eks.cluster_name
+  #count = var.create ? 1 : 0
+  name = var.cluster_name == null ? module.eks.cluster_name : var.cluster_name
 }
 
 data "aws_eks_cluster" "this" {
-  count = var.create ? 1 : 0
-  name  = module.eks.cluster_name
+  #count = var.create ? 1 : 0
+  name = var.cluster_name == null ? module.eks.cluster_name : var.cluster_name
 }
 
 locals {
@@ -478,7 +478,7 @@ locals {
     users = [{
       name = "terraform"
       user = {
-        token = data.aws_eks_cluster_auth.this[0].token
+        token = data.aws_eks_cluster_auth.this.token
       }
     }]
   }) : "{}"
@@ -486,7 +486,7 @@ locals {
   template_vars = var.create ? {
     cluster_name     = module.eks.cluster_name
     cluster_endpoint = module.eks.cluster_endpoint
-    cluster_ca       = data.aws_eks_cluster.this[0].certificate_authority[0].data
+    cluster_ca       = data.aws_eks_cluster.this.certificate_authority[0].data
     cluster_profile  = var.profile
     cluster_region   = var.region
   } : {}
@@ -560,7 +560,7 @@ locals {
     ## use module.eks.cluster_name instead of module.eks.cluster_id
     "cluster_id"                                = "${module.eks.cluster_name}",
     "cluster_endpoint"                          = "${module.eks.cluster_endpoint}",
-    "decode_cluster_certificate_authority_data" = "${base64decode(module.eks.cluster_certificate_authority_data)}",
+    "decode_cluster_certificate_authority_data" = "${module.eks.cluster_certificate_authority_data}",
     "secretsmanager_secret_name"                = "${local.secretsmanager_name}"
   }
 }
